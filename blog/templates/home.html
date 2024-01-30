@@ -25,7 +25,7 @@
   <p>Thank you for visiting my simple webpage!</p>
 
   {% for object in object_list %}
-    <p>{{object}}</p>
+    <p>{{object.content | safe}}</p>
   {% endfor %}
 
 {% endblock %}
