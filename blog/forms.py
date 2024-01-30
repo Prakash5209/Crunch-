@@ -9,5 +9,5 @@ class CreateBlogForm(forms.ModelForm):
         exclude = ('user',)
         widgets = {
             'content':TinyMCE(),
-            'title':forms.TextInput(attrs={'class':'form-control'})
+            'title':forms.TextInput(attrs={'class':'form-control','placeholder':'title'})
         }
