@@ -28,4 +28,3 @@ class CreateBlog(FormView):
         return super().form_valid(form)
 
 
-# this is on feat branch

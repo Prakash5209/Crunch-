@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 from decouple import config
 
@@ -38,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'tinymce',
+
     'account',
     'blog',
 ]
@@ -131,3 +136,34 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'account.User'
+
+
+# TINYMCE_JS_URL = os.path.join(STATIC_URL,"js/tinymce.min.js")
+# TINYMCE_JS_URL = STATIC_URL + 'js/tinymce.min.js'
+TINYMCE_JS_URL = 'https://cdn.tiny.cloud/1/seq26p9d00odqqdjovphd4yesq3avdmgpjdip3y3x83058gv/tinymce/6/tinymce.min.js'
+
+TINYMCE_DEFAULT_CONFIG = {
+    "height": "800px",
+    "width": "100%",
+    "skin": 'oxide-dark',
+    "menubar": "file edit view insert format tools table help",
+    "plugins": (
+        "advlist autolink lists link image charmap print preview anchor searchreplace "
+        "visualblocks code fullscreen insertdatetime media table paste code help wordcount spellchecker"
+    ),
+    "toolbar": (
+        "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | "
+        "alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | image | "
+        "link unlink anchor | codesample"
+    ),
+    "custom_undo_redo_levels": 10,
+    "language": "es_ES",  # To force a specific language instead of the Django current language.
+    "images_file_types": "jpg,svg,webp",
+    "image_advtab": True,  # Enable the advanced image tab in the image dialog
+    "image_default_align": "center",  # Default alignment for inserted images
+    "image_default_class": "your-custom-image-class",  # Default CSS class for inserted images
+}
+
+
+TINYMCE_SPELLCHECKER = True
+TINYMCE_COMPRESSOR = False
