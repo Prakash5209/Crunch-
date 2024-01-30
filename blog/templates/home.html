@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Welcome to My Simple Webpage</h1>
+
+  <p>This is a simple webpage with content, images, text, and a list.</p>
+
+  <h2>Section 1: Introduction</h2>
+
+  <img src="https://via.placeholder.com/800x400" alt="Placeholder Image">
+  
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac justo vel nulla eleifend malesuada. 
+     Curabitur tristique, lacus nec feugiat aliquam, urna leo facilisis ex, in suscipit odio nisl vitae lectus.
+  </p>
+
+  <h2>Section 2: Features</h2>
+
+  <ul>
+    <li>Feature 1</li>
+    <li>Feature 2</li>
+    <li>Feature 3</li>
+  </ul>
+
+  <h2>Section 3: Conclusion</h2>
+
+  <p>Thank you for visiting my simple webpage!</p>
+
+  {% for object in object_list %}
+    <p>{{object}}</p>
+  {% endfor %}
+
+{% endblock %}
