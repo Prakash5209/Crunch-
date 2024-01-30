@@ -26,3 +26,6 @@ class CreateBlog(FormView):
         obj.user = self.request.user
         obj.save()
         return super().form_valid(form)
+
+
+# this is on feat branch
