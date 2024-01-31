@@ -1,31 +1,97 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Welcome to My Simple Webpage</h1>
+<style>
+  .flex-container {
+  display: flex;
+  flex-direction: row;
+  font-size: 30px;
+  text-align: center;
+}
 
-  <p>This is a simple webpage with content, images, text, and a list.</p>
+.flex-item-left {
+  background-color: #f1f1f1;
+  padding: 10px;
+  flex: 50%;
+}
 
-  <h2>Section 1: Introduction</h2>
+.flex-item-right {
+  background-color: dodgerblue;
+  padding: 10px;
+  flex: 50%;
+}
 
-  <img src="https://via.placeholder.com/800x400" alt="Placeholder Image">
-  
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac justo vel nulla eleifend malesuada. 
-     Curabitur tristique, lacus nec feugiat aliquam, urna leo facilisis ex, in suscipit odio nisl vitae lectus.
-  </p>
+/* Responsive layout - makes a one column-layout instead of two-column layout */
+@media (max-width: 1000px) {
+  .flex-container {
+    flex-direction: column;
+  }
+}
+</style>
 
-  <h2>Section 2: Features</h2>
 
-  <ul>
-    <li>Feature 1</li>
-    <li>Feature 2</li>
-    <li>Feature 3</li>
-  </ul>
+<div class="container">
+  <div class="row">
+    <div class="col-8 border-right">
 
-  <h2>Section 3: Conclusion</h2>
+      <div class="flex-container">
+        <div class="flex-item-left">1</div>
+        <div class="flex-item-right">2</div>
+      </div>
+      
 
-  <p>Thank you for visiting my simple webpage!</p>
 
-  {% for object in object_list %}
-    <p>{{object.content | safe}}</p>
-  {% endfor %}
 
-{% endblock %}
+        <p>Thank you for visiting my simple webpage!</p>
+      
+        {% for object in object_list %}
+        <div id="content_{{object.id}}">
+
+          <div class="card m-3">
+            <div>
+              <a href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
+              <!-- {{ object.content | safe}} -->
+            </div>
+          </div>
+
+          <!-- <p>{{object.content | safe}}</p> -->
+        </div>
+        {% endfor %}
+
+    </div>
+    <div class="col-4">
+      <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">List group item heading</h5>
+            <small>3 days ago</small>
+          </div>
+          <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+          <small>Donec id elit non mi porta.</small>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">List group item heading</h5>
+            <small class="text-muted">3 days ago</small>
+          </div>
+          <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+          <small class="text-muted">Donec id elit non mi porta.</small>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">List group item heading</h5>
+            <small class="text-muted">3 days ago</small>
+          </div>
+          <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+          <small class="text-muted">Donec id elit non mi porta.</small>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var cont = document.getElementsByTagName('p').innerHTML;
+console.log(cont);
+</script>
+
+{% endblock %}  
