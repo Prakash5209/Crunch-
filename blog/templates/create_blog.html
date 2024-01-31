@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div>
+    <div><br>
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="submit">
+            {% for field in form %}
+                {% if field.name != 'name' %}  {# or use field.label_tag if you want to check the label #}
+                    <p>{{ field }}</p>
+                {% endif %}
+            {% endfor %}
+
+            {{ form.media }}
+            <input type="submit" value="Publish" class="btn btn-outline-info btn-sm">
         </form>
-    </div>
+    </div>  
 {% endblock %}
