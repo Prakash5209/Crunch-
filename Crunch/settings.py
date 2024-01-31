@@ -145,7 +145,7 @@ TINYMCE_JS_URL = 'https://cdn.tiny.cloud/1/seq26p9d00odqqdjovphd4yesq3avdmgpjdip
 TINYMCE_DEFAULT_CONFIG = {
     "height": "800px",
     "width": "100%",
-    "skin": 'oxide-dark',
+    # "skin": 'oxide-dark',
     "menubar": "file edit view insert format tools table help",
     "plugins": (
         "advlist autolink lists link image charmap print preview anchor searchreplace "
