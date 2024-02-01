@@ -140,7 +140,9 @@ AUTH_USER_MODEL = 'account.User'
 
 # TINYMCE_JS_URL = os.path.join(STATIC_URL,"js/tinymce.min.js")
 # TINYMCE_JS_URL = STATIC_URL + 'js/tinymce.min.js'
-TINYMCE_JS_URL = 'https://cdn.tiny.cloud/1/seq26p9d00odqqdjovphd4yesq3avdmgpjdip3y3x83058gv/tinymce/6/tinymce.min.js'
+# TINYMCE_JS_URL = 'https://cdn.tiny.cloud/1/seq26p9d00odqqdjovphd4yesq3avdmgpjdip3y3x83058gv/tinymce/6/tinymce.min.js'
+
+# TINYMCE_JS_URL = './home/linux/Documents/kathford/fourth_semester/project_i/vm/src/staticfiles/js/tinymce.min.js'
 
 TINYMCE_DEFAULT_CONFIG = {
     "height": "800px",
@@ -157,7 +159,7 @@ TINYMCE_DEFAULT_CONFIG = {
         "link unlink anchor | codesample"
     ),
     "custom_undo_redo_levels": 10,
-    "language": "es_ES",  # To force a specific language instead of the Django current language.
+    "language": "en_EN",  # To force a specific language instead of the Django current language.
     "images_file_types": "jpg,svg,webp",
     "image_advtab": True,  # Enable the advanced image tab in the image dialog
     "image_default_align": "center",  # Default alignment for inserted images
