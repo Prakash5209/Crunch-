@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
     <div><br>
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {% for field in form %}
                 {% if field.name != 'name' %}  {# or use field.label_tag if you want to check the label #}

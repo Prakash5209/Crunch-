@@ -2,7 +2,11 @@
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="col-9">      
+    <div class="col-9">
+      {% if object.image %}
+        <img src=" {{object.image.url}}" alt="" width="100%">
+      {% endif %}
+      {{object.user}}
       {{object.title }}
       {{object.content | safe}}
       <a href="{% url 'blog:update_blog' object.id %}">Edit</a>

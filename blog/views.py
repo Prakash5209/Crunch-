@@ -14,9 +14,9 @@ from blog.forms import CreateBlogForm
 class Home(ListView):
     template_name = 'home.html'
     model = CreateBlogModel
-
+    
     def get_queryset(self):
-        return CreateBlogModel.objects.all()
+        return CreateBlogModel.objects.filter(status = 'public')
 
 class CreateBlog(FormView):
     template_name = 'create_blog.html'

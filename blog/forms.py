@@ -8,6 +8,9 @@ class CreateBlogForm(forms.ModelForm):
         model = CreateBlogModel
         exclude = ('user',)
         widgets = {
+            # 'image':forms.ImageField(attrs={'class':'form-control'}),
             'content':TinyMCE(),
-            'title':forms.TextInput(attrs={'class':'form-control','placeholder':'title'})
+            'title':forms.TextInput(attrs={'class':'form-control','placeholder':'title'}),
+            'status':forms.Select(attrs={'class':'form-control'}),
         }
+    
