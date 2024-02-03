@@ -1,7 +1,7 @@
 from django import forms
 from tinymce.widgets import TinyMCE
 
-from blog.models import CreateBlogModel
+from blog.models import CreateBlogModel,BlogCommentModel
 
 class CreateBlogForm(forms.ModelForm):
     class Meta:
@@ -12,5 +12,14 @@ class CreateBlogForm(forms.ModelForm):
             'content':TinyMCE(),
             'title':forms.TextInput(attrs={'class':'form-control','placeholder':'title'}),
             'status':forms.Select(attrs={'class':'form-control'}),
+        }
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = BlogCommentModel
+        fields = ('comment',)
+        widgets = {
+            'comment':forms.TextInput(attrs={'class':'form-control','placeholder':'write comment'})
         }
     

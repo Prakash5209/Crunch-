@@ -2,17 +2,74 @@
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="col-9">
+    <div class="col-8">
+      {% if request.user == object.user %}
+      <a href="{% url 'blog:update_blog' object.id %}">Edit</a>
+      <a href="">Delete</a><br>
+      {% endif %}
       {% if object.image %}
         <img src=" {{object.image.url}}" alt="" width="100%">
       {% endif %}
-      {{object.user}}
-      {{object.title }}
-      {{object.content | safe}}
-      <a href="{% url 'blog:update_blog' object.id %}">Edit</a>
+      <strong>{{object.user}}</strong>
+      <p>{{blog_model.created_at}}</p>
+      <h3>{{blog_model.title }}</h3>
+      {{blog_model.content | safe}}
     </div>
-    <div class="col-3 border"></div>
+    <div class="col-4 border p-3">
+      <form method="post">
+        {% csrf_token %}
+        {{ form }}
+      </form>
+      <form method="post">
+        {% csrf_token %}
+        {% for form_fields in blog_comment_form %}
+          {% if form_fields.name != 'name' %}
+            {{ form_fields }}
+          {% endif %}
+        {% endfor %}
+      </form>
+      <h3>Comment Section</h3>
+      <!-- {{ blog_comments }} -->
+      {% for comments in blog_comments %}
+        <p>{{comments.user}}: {{ comments.comment }}</p>
+      {% endfor %}
+    </div>
   </div>    
 </div>
 
+<!-- 
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Post</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this post!</p>
+        <form id="del-form" method="post" action="">
+        	{% csrf_token %}
+        	<input id="_slug" type="hidden" name="slug"/>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button id="del-btn" type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function(){
+    let modal = document.getElementById("exampleModal");
+    modal.addEventListener("show.bs.modal",function(evt){
+      let deleteButton = evt.relatedTarget;
+      $("#_slug").val(deleteButton.dataset.slug);
+    });
+    $("#del-btn").click(function(){
+      $("#del-form").submit();
+    })
+  });
+</script> -->
 {% endblock %}
