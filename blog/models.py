@@ -12,6 +12,7 @@ class TimeStampModel(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ['-modified_at','-created_at']
 
 class CreateBlogModel(TimeStampModel):
     image = models.ImageField(upload_to='post',blank=True,null=True)
@@ -24,14 +25,14 @@ class CreateBlogModel(TimeStampModel):
     def __str__(self):
         return f'title:{self.title}, by:{self.user}'
     
-class BlogCommentModel(models.Model):
+class BlogCommentModel(TimeStampModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     blog_id = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE)
     parent_comment = models.ForeignKey('self',null = True,blank = True,on_delete=models.CASCADE,related_name = 'replies')
     comment = models.TextField()
 
     def __str__(self):
-        return f'user:{self.user}, post_id:{self.blog_id}, comment:{self.comment[:30]}...'
+        return f'{self.comment[:20]}..., by:{self.user}, post_id:{self.blog_id.id}'
 
 
 # class LikeModel(models.Model):

@@ -12,7 +12,6 @@ def userLogin(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        print(email,password)
         user = authenticate(request,email = email,password = password)
         if user:
             login(request,user)

@@ -20,6 +20,6 @@ class CommentForm(forms.ModelForm):
         model = BlogCommentModel
         fields = ('comment',)
         widgets = {
-            'comment':forms.TextInput(attrs={'class':'form-control','placeholder':'write comment'})
+            'comment':forms.TextInput(attrs={'class':'form-control','placeholder':'write a comment'})
         }
     

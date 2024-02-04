@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404,render,redirect
 from django.urls import reverse_lazy,reverse
+from django.contrib.auth import get_user_model
 from django.views.generic import FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView,DeleteView,CreateView
+from django.conf import settings
 
 from account.models import User
 from blog.models import CreateBlogModel,BlogCommentModel
@@ -13,6 +15,7 @@ class Home(ListView):
     template_name = 'home.html'
     model = CreateBlogModel
     
+    print(model.objects.all())
     def get_queryset(self):
         return CreateBlogModel.objects.filter(status = 'public')
 
@@ -28,20 +31,26 @@ class CreateBlog(FormView):
         return super().form_valid(form)
     
 def BlogDetail(request,pk):
-    blog_model = CreateBlogModel.objects.get(id = pk)
+    blog_model = get_object_or_404(CreateBlogModel,status = 'public',id = pk)
 
-    print(blog_model)
     blog_comment_form = CommentForm(request.POST or None)
 
-    if blog_comment_form.is_valid():
-        obj = blog_comment_form.save(commit=False)
-        obj.user = request.user
-        obj.blog_id = blog_model
-        obj.save()
-        return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
+    if request.method == 'POST':
+        if blog_comment_form.is_valid():
+            obj = blog_comment_form.save(commit=False)
+            obj.user = request.user
+            obj.blog_id = blog_model
+            obj.save()
+            return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
+        
+    if request.method == 'POST':
+        comment_id = request.POST.get('comment_id')
+        comment = request.POST.get('reply')
+        BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save()
+        print('saved')
+
         # return render(reverse('blog:blog_detail',args = (blog_model.id,)))
     blog_comment_model = BlogCommentModel.objects.filter(blog_id = pk)
-    print(blog_comment_model)
 
     context = {'blog_model':blog_model,'blog_comment_form':blog_comment_form,'blog_comments':blog_comment_model}
     return render(request,'read_blog.html',context)
@@ -57,7 +66,6 @@ class UpdateBlog(UpdateView):
     # def form_valid(self, form):
     #     self.object = form.save()
     #     return super().form_valid(form)
-    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
