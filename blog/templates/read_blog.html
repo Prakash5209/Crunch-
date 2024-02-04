@@ -10,7 +10,7 @@
       {% if object.image %}
         <img src=" {{object.image.url}}" alt="" width="100%">
       {% endif %}
-      <strong>{{object.user}}</strong>
+      <strong>{{blog_model.user}}</strong>
       <p>{{blog_model.created_at}}</p>
       <h3>{{blog_model.title }}</h3>
       {{blog_model.content | safe}}
@@ -20,22 +20,96 @@
         {% csrf_token %}
         {{ form }}
       </form>
-      <form method="post">
+      <form method="post" id="reply-form">
         {% csrf_token %}
         {% for form_fields in blog_comment_form %}
           {% if form_fields.name != 'name' %}
             {{ form_fields }}
           {% endif %}
         {% endfor %}
+        <hr>
       </form>
       <h3>Comment Section</h3>
       <!-- {{ blog_comments }} -->
       {% for comments in blog_comments %}
-        <p>{{comments.user}}: {{ comments.comment }}</p>
+      <div class="comment_section" data-comment-id="{{comments.id}}">
+        <p>{{comments.user}}: {{  comments.comment }} <span><a href="#" class="reply-field">reply</a></span></p>
+      </div>
       {% endfor %}
     </div>
   </div>    
 </div>
+
+<script>
+  const reply_field = document.querySelectorAll('.reply-field');
+  reply_field.forEach(function(reply_field){
+    reply_field.addEventListener('click',add_input_function);
+  });
+
+
+  function add_input_function(e) {
+    var comment_section = e.target.closest('.comment_section');
+
+    if (comment_section && !comment_section.querySelector('.form-control[name="comment_id"]')) {
+        var commentId = comment_section.dataset.commentId;
+
+        // Create a new form element
+        var replyForm = document.createElement('form');
+        replyForm.setAttribute('method', 'post');
+
+
+        var csrfTokenInput = document.createElement('input');
+        csrfTokenInput.setAttribute('type','hidden');
+        csrfTokenInput.setAttribute('name','csrfmiddlewaretoken');
+        csrfTokenInput.setAttribute('value','{{ csrf_token }}');
+
+        // Create a hidden input for the comment id
+        var commentIdInput = document.createElement('input');
+        commentIdInput.setAttribute('type', 'hidden');
+        commentIdInput.setAttribute('name', 'comment_id');
+        commentIdInput.setAttribute('value', commentId);
+
+        // Create the reply input
+        var comment_field = document.createElement('input');
+        comment_field.setAttribute('placeholder', 'reply');
+        comment_field.setAttribute('class', 'form-control');
+        comment_field.setAttribute('name', 'reply');
+
+        // Append both inputs to the form
+        replyForm.appendChild(csrfTokenInput);
+        replyForm.appendChild(commentIdInput);
+        replyForm.appendChild(comment_field);
+        
+
+        // Append the form to the comment section
+        comment_section.appendChild(replyForm);
+    }
+  }
+
+
+
+
+  // function add_input_function(e) {
+  //   var comment_section = e.target.closest('.comment_section');
+  //   if (comment_section && !comment_section.querySelector('input')) {
+  //     var commentId = comment_section.dataset.commentId;
+
+  //     // Create a hidden input for the comment id
+  //     var commentIdInput = document.createElement('input');
+  //     commentIdInput.setAttribute('type', 'hidden');
+  //     commentIdInput.setAttribute('name', 'comment_id');
+  //     commentIdInput.setAttribute('value', commentId);
+
+
+  //     var comment_field = document.createElement('input');
+  //     comment_field.setAttribute('placeholder','reply');
+  //     comment_field.setAttribute('class','form-control');
+
+  //     comment_section.appendChild(commentIdInput);
+  //     comment_section.appendChild(comment_field);
+  //   }
+  // }
+</script>
 
 <!-- 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
