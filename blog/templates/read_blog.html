@@ -3,8 +3,8 @@
 <div class="container">
   <div class="row">
     <div class="col-8">
-      {% if request.user == object.user %}
-      <a href="{% url 'blog:update_blog' object.id %}">Edit</a>
+      {% if request.user == blog_model.user %}
+      <a href="{% url 'blog:update_blog' blog_model.id %}">Edit</a>
       <a href="">Delete</a><br>
       {% endif %}
       {% if object.image %}
