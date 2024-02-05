@@ -4,6 +4,7 @@ from django.conf import settings
 
 class Status(models.TextChoices):
     DRAFT = 'draft','DRAFT',
+    # PENDING = 'pending','PENDING',
     PUBLIC = 'public','PUBLIC',
 
 class TimeStampModel(models.Model):
@@ -20,6 +21,7 @@ class CreateBlogModel(TimeStampModel):
     title = models.CharField(max_length=255)
     content = tinymce_models.HTMLField()
     status = models.CharField(max_length=255,choices=Status.choices,default=Status.DRAFT)
+
 
     
     def __str__(self):
