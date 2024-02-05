@@ -15,10 +15,16 @@
 }
 
 .flex-item-right {
-  background-color: dodgerblue;
+  font-size: 15px;
   padding: 10px;
   flex: 50%;
 }
+.flex-item-right >a{
+  text-decoration: underline;
+  color: black;
+  padding: 5px;
+}
+
 
 /* Responsive layout - makes a one column-layout instead of two-column layout */
 @media (max-width: 1000px) {
@@ -31,29 +37,42 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-8 border-right">
+    <div class="col-8">
 
-      <div class="flex-container">
-        <div class="flex-item-left">1</div>
-        <div class="flex-item-right">2</div>
+      <div class="flex-container mt-3">
+        <input class="form-control" type="search" placeholder="search..." aria-label="Search" style="border-radius: 10px;">
+        <!-- <div class="flex-item-left border">
+          <form class="form">
+          </form>
+        </div>
+        <div class="flex-item-right border p-3">
+          <a href="#">Keyboard</a>
+          <a href="#">Mouse</a>
+          <a href="#">Computer</a>
+          <a href="#">Java</a>
+        </div> -->
       </div>
       
 
 
 
-        <p>Thank you for visiting my simple webpage!</p>
       
         {% for object in object_list %}
-        <div id="content_{{object.id}}">
-
-          <div class="card m-3">
+        <div id="content_{{object.id}}" class="card mt-3">
+          <div class="card-header">
             <div>
               <a href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
-              <!-- {{ object.content | safe}} -->
             </div>
           </div>
+          <div class="card-body py-0 px-2" >
+            <blockquote class="blockquote mb-0">
+              <!-- <p><small>{{object.content|safe|slice:":500"}}</small></p> -->
+              <!-- <p><small>{{object.content|slice:"0:200"}}</small></p> -->
+              <p><small>{{object.content|striptags|slice:":200"|lower}}...</small></p>
+            <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
+          </blockquote>
+          </div>
 
-          <!-- <p>{{object.content | safe}}</p> -->
         </div>
         {% endfor %}
 

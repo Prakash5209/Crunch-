@@ -1,7 +1,9 @@
+from typing import Any
+from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404,render,redirect
 from django.urls import reverse_lazy,reverse
 from django.contrib.auth import get_user_model
-from django.views.generic import FormView
+from django.views.generic import FormView,TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView,DeleteView,CreateView
@@ -15,7 +17,6 @@ class Home(ListView):
     template_name = 'home.html'
     model = CreateBlogModel
     
-    print(model.objects.all())
     def get_queryset(self):
         return CreateBlogModel.objects.filter(status = 'public')
 
@@ -38,15 +39,19 @@ def BlogDetail(request,pk):
     if request.method == 'POST':
         if blog_comment_form.is_valid():
             obj = blog_comment_form.save(commit=False)
-            obj.user = request.user
-            obj.blog_id = blog_model
-            obj.save()
-            return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
+            if request.user.is_authenticated:
+                obj.user = request.user 
+                obj.blog_id = blog_model
+                obj.save()
+                return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
+            else:
+                return redirect('account:userLogin')
         
     if request.method == 'POST':
         comment_id = request.POST.get('comment_id')
         comment = request.POST.get('reply')
-        BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save()
+        
+        BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None
         print('saved')
 
         # return render(reverse('blog:blog_detail',args = (blog_model.id,)))
@@ -79,9 +84,18 @@ class UpdateBlog(UpdateView):
         return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
 
 
+# def DeleteBlog(request,pk):
+#     CreateBlogModel.objects.get(id = pk).delete()
+#     return redirect(reverse('blog:home'))
+    
 class DeleteBlog(DeleteView):
-    queryset = CreateBlogModel.objects.all()
+    model = CreateBlogModel
     success_url = reverse_lazy('blog:home')
+    template_name = 'read_blog.html'
+
+class Aboutpage(TemplateView):
+    template_name = 'aboutus.html'
 
 
-
+class Contactpage(TemplateView):
+    template_name = 'contactus.html'
