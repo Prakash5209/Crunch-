@@ -7,6 +7,7 @@ from django.views.generic import FormView,TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView,DeleteView,CreateView
+from django.contrib import messages
 from django.conf import settings
 
 from account.models import User
@@ -66,22 +67,25 @@ class UpdateBlog(UpdateView):
     # fields = ['title','content']
     template_name = 'create_blog.html'
     form_class = CreateBlogForm
-    success_url = '/'
+    # success_url = '/'
 
     # def form_valid(self, form):
     #     self.object = form.save()
     #     return super().form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
         
-        # Check if the post is a new one
-        context['is_new_post'] = not self.object.pk
+    #     # Check if the post is a new one
+    #     context['is_new_post'] = not self.object.pk
         
-        return context
+    #     return context
 
     def get_success_url(self):
+        messages.add_message(self.request,messages.SUCCESS,'blog updated!')
         return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
+    
+    
 
 
 # def DeleteBlog(request,pk):
