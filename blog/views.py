@@ -9,17 +9,86 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView,DeleteView,CreateView
 from django.contrib import messages
 from django.conf import settings
+from django.http import HttpResponse
+import requests
+import re
 
 from account.models import User
 from blog.models import CreateBlogModel,BlogCommentModel
 from blog.forms import CreateBlogForm,CommentForm
 
+from decouple import config
+
+
 class Home(ListView):
     template_name = 'home.html'
     model = CreateBlogModel
-    
+
     def get_queryset(self):
         return CreateBlogModel.objects.filter(status = 'public')
+
+
+# class CreateBlog(FormView):
+#     template_name = 'create_blog.html'
+#     form_class = CreateBlogForm
+#     success_url = "/"
+
+#     def form_valid(self, form):
+#         obj = form.save(commit=False)
+#         obj.user = self.request.user
+
+#         # Obtain text from the form
+#         text = form.cleaned_data['title']
+#         print(text)
+
+#         # Call the Perspective API to analyze toxicity
+#         toxicity_score = self.analyze_toxicity('text')
+
+#         # Here, you can use the toxicity_score to decide whether to save the object or not
+#         if toxicity_score is not None and toxicity_score <= 0.7:
+#             obj.save()
+#             return super().form_valid(form)
+#         else:
+#             # Optionally, you can render a template indicating that the content is toxic
+#             return render(self.request, 'toxic_content.html')
+        
+#     def analyze_toxicity(self, text):
+#         api_key = 'AIzaSyATP0DR9mYqI45FF1JQrmAcwvZuBQoRI9U'  # Replace with your Perspective API key
+
+#         # API endpoint for analyzing text toxicity
+#         perspective_api_url = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze'
+
+#         # Parameters for the API request
+#         params = {
+#             'key': api_key,
+#         }
+
+#         # Request body containing the text to analyze
+#         json_data = {
+#             'comment': {'text': text},
+#             'languages': ['en'],  # Assuming English language
+#             'requestedAttributes': {'TOXICITY': {}},  # Request toxicity score
+#         }
+
+#         try:
+#             # Make POST request to Perspective API
+#             response = requests.post(perspective_api_url, params=params, json=json_data)
+
+#             if response.status_code == 200:
+#                 data = response.json()
+#                 toxicity_score = data['attributeScores']['TOXICITY']['summaryScore']['value']
+#                 print("Toxicity score:", toxicity_score)  # Debugging print
+#                 return toxicity_score
+#             else:
+#                 # Handle API error
+#                 print("API error:", response.status_code, response.reason)  # Debugging print
+#                 return None
+#         except Exception as e:
+#             # Handle other exceptions
+#             print("Exception during API call:", e)  # Debugging print
+#             return None
+
+
 
 class CreateBlog(FormView):
     template_name = 'create_blog.html'
@@ -29,8 +98,26 @@ class CreateBlog(FormView):
     def form_valid(self,form):
         obj = form.save(commit = False)
         obj.user = self.request.user
-        obj.save()
-        return super().form_valid(form)
+
+        profan = config('profanity')
+        profan_list = profan.split('-')
+        title = form.cleaned_data['title']
+        content = form.cleaned_data['content']
+
+        pattern = re.compile('<.*?>')
+        result = re.sub(pattern,'',content)
+        print(result)
+
+        title_check = set(title.split(' ')).intersection(set(profan_list))
+        # content_check = set(content.split(' ').intersection(set(profan_list)))
+        if len(title_check) > 0 and len(result) > 0:
+            return HttpResponse('invalid content')
+        else:
+            # obj.save()
+            print('content good')
+            return super().form_valid(form)
+        # obj.save()
+    
     
 def BlogDetail(request,pk):
     blog_model = get_object_or_404(CreateBlogModel,status = 'public',id = pk)
@@ -101,3 +188,6 @@ class Aboutpage(TemplateView):
 
 class Contactpage(TemplateView):
     template_name = 'contactus.html'
+
+
+    # AIzaSyATP0DR9mYqI45FF1JQrmAcwvZuBQoRI9U

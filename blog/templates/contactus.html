@@ -1,52 +1,66 @@
 {% extends 'base.html' %}
 {% block content %}
     <style>
-        .container h3 {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 10px 0 0 0;
-        border: 2px solid whitesmoke;
-        height: 100px;
-        color: white;
-        background-color: rgba(66, 55, 55, 0.758);
-        }
-
-        .box1 {
-        border: 2px solid whitesmoke;
-        border-radius: 7px;
-        padding: 20px;
-        height: fit-content;
-        width: 100%;
-        }
-
-        .box2 {
-        margin: 20px 0 50px 0;
-        width: 100%;
-
-
-        }
+        @media only screen and (max-width: 600px) {
+      .contact-form {
+        width: 100%; 
+      }
+    }
+    
+    /* Tablet and desktop styles */
+    @media only screen and (min-width: 601px) {
+      .contact-form {
+        width: 50%;
+      }
+    }
+    
+    .contact-form {
+      margin: 0 auto;
+      padding: 20px;
+      background: #f2f2f2;
+      border-radius: 10px;
+    }
+    
+    label, input, textarea {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    
+    input, textarea {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid gray;
+    }
+    
+    input[type="submit"] {
+      background: blue;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
     </style>
 
 
 
     <h3>Contact Us</h3>
-    <div class="box1">
-    <p>If you have any questions or comments, we would like to hear from you. We value your comments, complaints, and
-        suggestions.<br>
-
-    <ul>
-        <li>Fur further information on our services and the bognepal.com system, please use the form below or email:
-        </li>
-        <li>For support and technical questions, please contact our support team:support@crunchblog.com</li>
-        <li>For detail questions, please contact our info team:info@crunchblog.com</li>
-    </ul><br>
-
-    You can also call us during business hours in Nepal at: (977-1)xxxxxxx/ xxxxxxx(Sunday-Friday)
-    </p>
-    </div>
-    <div class="box2">
-        <iframe width="1085" height="611" src="https://www.youtube.com/embed/uSlrIk04mE0" title="TimeCop 1983 - On The Run [10 Hr track]" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-
-    </div>
+    <div class="contact-form">
+        <h1>Contact Us</h1>
+        
+        <form>
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name">
+          
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email">
+          
+          <label for="message">Message:</label>  
+          <textarea id="message" name="message"></textarea>
+          
+          <input type="submit" value="Submit">
+        </form>
+      </div>
+    
 {% endblock %}
