@@ -10,7 +10,7 @@ from django.views.generic.edit import UpdateView,DeleteView,CreateView
 from django.contrib import messages
 from django.conf import settings
 from django.http import HttpResponse
-import requests
+from django.db.models import Q
 import re
 
 from account.models import User
@@ -28,7 +28,14 @@ class Home(ListView):
     def get_queryset(self):
         return CreateBlogModel.objects.filter(status = 'public')
 
-
+def search_feature(request):
+    if request.method == 'POST':
+        search_query = request.POST.get('search')
+        print(search_query)
+        blog_model = CreateBlogModel.objects.filter(Q(title__icontains=search_query) | Q(content__icontains=search_query))
+        context = {'query':search_query,'searched':blog_model}
+        return render(request,'home.html',context)
+        
 class CreateBlog(FormView):
     template_name = 'create_blog.html'
     form_class = CreateBlogForm

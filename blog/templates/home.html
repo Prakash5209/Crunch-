@@ -40,7 +40,10 @@
     <div class="col-8">
 
       <div class="flex-container mt-3">
-        <input class="form-control" type="search" placeholder="search..." aria-label="Search" style="border-radius: 10px;">
+        <form method="post" action="{% url 'blog:search_feature' %}">
+          {% csrf_token %}
+          <input class="form-control" type="search" placeholder="search..." name="search" aria-label="Search" width="100%">
+        </form>
         <!-- <div class="flex-item-left border">
           <form class="form">
           </form>
@@ -52,6 +55,28 @@
           <a href="#">Java</a>
         </div> -->
       </div>
+      {% if query %}
+        {% if searched %}
+          {% for i in searched %}
+          <div id="content_{{i.id}}" class="card mt-3">
+            <div class="card-header">
+              <div>
+                <a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
+              </div>
+            </div>
+            <div class="card-body py-0 px-2" >
+              <blockquote class="blockquote mb-0">
+                <!-- <p><small>{{object.content|safe|slice:":500"}}</small></p> -->
+                <!-- <p><small>{{object.content|slice:"0:200"}}</small></p> -->
+                <p><small>{{i.content|striptags|slice:":200"|lower|safe}}...</small></p>
+              <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
+            </blockquote>
+            </div>
+  
+          </div>
+          {% endfor %}
+        {% endif %}
+      {% endif %}
       
 
 
@@ -68,7 +93,7 @@
             <blockquote class="blockquote mb-0">
               <!-- <p><small>{{object.content|safe|slice:":500"}}</small></p> -->
               <!-- <p><small>{{object.content|slice:"0:200"}}</small></p> -->
-              <p><small>{{object.content|striptags|slice:":200"|lower}}...</small></p>
+              <p><small>{{object.content|striptags|slice:":200"|lower|safe}}...</small></p>
             <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
           </blockquote>
           </div>
