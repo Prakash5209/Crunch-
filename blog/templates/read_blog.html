@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+ .comment {
+    margin-bottom: 10px;
+}
+
+.replies {
+    margin-left: 20px;
+    display: none;
+}
+
+.replies.show {
+    display: block;
+}
+
+</style>
+
 {% if messages %}
   {% for message in messages %}
     <p>{{message}}</p>
@@ -14,8 +30,8 @@
       <a href="{% url 'blog:update_blog' blog_model.id %}">Edit</a>
       <a href="" data-toggle="modal" data-target="#exampleModal">Delete</a><br>
       {% endif %}
-      {% if object.image %}
-        <img src=" {{object.image.url}}" alt="" width="100%">
+      {% if blog_model.image %}
+        <img src=" {{blog_model.image.url}}" alt="superman" width="100%">
       {% endif %}
       <strong>{{blog_model.user}}</strong>
       <p>{{blog_model.created_at}}</p>
@@ -36,18 +52,35 @@
         {% endfor %}
         <hr>
       </form>
+
+
       <h3>Comment Section</h3>
-      <!-- {{ blog_comments }} -->
-      {% for comments in blog_comments %}
+      <!-- {% for comments in blog_comments %}
       <div class="comment_section" data-comment-id="{{comments.id}}">
         <p>{{comments.user}}: {{  comments.comment }} <span>{% if request.user.is_authenticated %}<a href="#" class="reply-field">reply</a>{% endif %}</span></p>
-          {% for com in blog_comments %}
+        {% for com in blog_comments %}
             {% if com.id == comments.parent_comment %}
               <p>{{com}}</p>
             {% endif %}
           {% endfor %}
         </div>
+      {% endfor %} -->
+      <ol>
+      {% for comment in blog_comments %}
+        {% if not comment.parent_comment %}
+          <div data-parent-id="{{comment.id}}">
+            <li>{{comment.user}}:{{comment.comment}}<input type="hidden" id="parent_id" name="parent_id_comment" value="{{comment.id}}"><span>{% if request.user.is_authenticated %}<a href="#" class="reply-field">reply</a>{% endif %}</span></li>
+            {% for j in blog_comments %}
+              {% if j.parent_comment == comment %}
+                <div data-child-id="{{j.id}}">
+                  <strong>{{j}}<input type="hidden" name="child_id" value="{{j.id}}"><span>{% if request.user.is_authenticated %}<a href="#" class="reply-field">reply</a>{% endif %}</span></strong>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
       {% endfor %}
+      </ol>
     </div>
   </div>    
 </div>
@@ -83,51 +116,83 @@
   </div>
 </div>
 
+
 <script>
-  const reply_field = document.querySelectorAll('.reply-field');
-  reply_field.forEach(function(reply_field){
-    reply_field.addEventListener('click',add_input_function);
-  });
+  // const reply_field = document.querySelectorAll('.reply-field');
+  // reply_field.forEach(function(reply_field){
+  //   reply_field.addEventListener('click',add_input_function);
+  // });
 
 
-  function add_input_function(e) {
-    var comment_section = e.target.closest('.comment_section');
+  // function add_input_function(e) {
+  //   var comment_section = e.target.closest('.comment_section');
 
-    if (comment_section && !comment_section.querySelector('.form-control[name="comment_id"]')) {
-        var commentId = comment_section.dataset.commentId;
+  //   if (comment_section && !comment_section.querySelector('.form-control[name="comment_id"]')) {
+  //       var commentId = comment_section.dataset.commentId;
 
-        // Create a new form element
-        var replyForm = document.createElement('form');
-        replyForm.setAttribute('method', 'post');
+  //       // Create a new form element
+  //       var replyForm = document.createElement('form');
+  //       replyForm.setAttribute('method', 'post');
 
 
-        var csrfTokenInput = document.createElement('input');
-        csrfTokenInput.setAttribute('type','hidden');
-        csrfTokenInput.setAttribute('name','csrfmiddlewaretoken');
-        csrfTokenInput.setAttribute('value','{{ csrf_token }}');
+  //       var csrfTokenInput = document.createElement('input');
+  //       csrfTokenInput.setAttribute('type','hidden');
+  //       csrfTokenInput.setAttribute('name','csrfmiddlewaretoken');
+  //       csrfTokenInput.setAttribute('value','{{ csrf_token }}');
 
-        // Create a hidden input for the comment id
-        var commentIdInput = document.createElement('input');
-        commentIdInput.setAttribute('type', 'hidden');
-        commentIdInput.setAttribute('name', 'comment_id');
-        commentIdInput.setAttribute('value', commentId);
+  //       // Create a hidden input for the comment id
+  //       var commentIdInput = document.createElement('input');
+  //       commentIdInput.setAttribute('type', 'hidden');
+  //       commentIdInput.setAttribute('name', 'comment_id');
+  //       commentIdInput.setAttribute('value', commentId);
 
-        // Create the reply input
-        var comment_field = document.createElement('input');
-        comment_field.setAttribute('placeholder', 'reply');
-        comment_field.setAttribute('class', 'form-control');
-        comment_field.setAttribute('name', 'reply');
+  //       // Create the reply input
+  //       var comment_field = document.createElement('input');
+  //       comment_field.setAttribute('placeholder', 'reply');
+  //       comment_field.setAttribute('class', 'form-control');
+  //       comment_field.setAttribute('name', 'reply');
 
-        // Append both inputs to the form
-        replyForm.appendChild(csrfTokenInput);
-        replyForm.appendChild(commentIdInput);
-        replyForm.appendChild(comment_field);
+  //       // Append both inputs to the form
+  //       replyForm.appendChild(csrfTokenInput);
+  //       replyForm.appendChild(commentIdInput);
+  //       replyForm.appendChild(comment_field);
         
 
-        // Append the form to the comment section
-        comment_section.appendChild(replyForm);
+  //       // Append the form to the comment section
+  //       comment_section.appendChild(replyForm);
+  //   }
+  // }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const replyLinks = document.querySelectorAll('.reply-field');
+    replyLinks.forEach(function(link) {
+      link.addEventListener('click', addReplyForm);
+    });
+
+    function addReplyForm(event) {
+      event.preventDefault();
+      const parentDiv = event.target.closest('div[data-parent-id]');
+      const formExists = parentDiv.querySelector('.reply-form');
+      if (!formExists) {
+        // const hidden_input = document.createElement('input');
+        // hidden_input.setAttribute('value',)
+        const node = document.getElementById('parent_id');
+        const clone = node.cloneNode(true);
+        const form = document.createElement('form');
+        // form.setAttribute()
+        form.setAttribute('method', 'post');
+        form.appendChild(clone);
+        form.classList.add('reply-form');
+        form.innerHTML = `
+          {% csrf_token %}
+          <input type="hidden" name="parent_comment_id" value="${parentDiv.dataset.parentId}">
+          <textarea name="reply" placeholder="Your reply"></textarea>
+          <button type="submit">Submit</button>
+        `;
+        parentDiv.appendChild(form);
+      }
     }
-  }
+  });
 </script>
 
 {% endblock %}

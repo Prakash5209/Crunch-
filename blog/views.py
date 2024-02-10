@@ -15,6 +15,7 @@ import re
 
 from account.models import User
 from blog.models import CreateBlogModel,BlogCommentModel
+from account.models import User
 from blog.forms import CreateBlogForm,CommentForm
 
 from decouple import config
@@ -26,68 +27,6 @@ class Home(ListView):
 
     def get_queryset(self):
         return CreateBlogModel.objects.filter(status = 'public')
-
-
-# class CreateBlog(FormView):
-#     template_name = 'create_blog.html'
-#     form_class = CreateBlogForm
-#     success_url = "/"
-
-#     def form_valid(self, form):
-#         obj = form.save(commit=False)
-#         obj.user = self.request.user
-
-#         # Obtain text from the form
-#         text = form.cleaned_data['title']
-#         print(text)
-
-#         # Call the Perspective API to analyze toxicity
-#         toxicity_score = self.analyze_toxicity('text')
-
-#         # Here, you can use the toxicity_score to decide whether to save the object or not
-#         if toxicity_score is not None and toxicity_score <= 0.7:
-#             obj.save()
-#             return super().form_valid(form)
-#         else:
-#             # Optionally, you can render a template indicating that the content is toxic
-#             return render(self.request, 'toxic_content.html')
-        
-#     def analyze_toxicity(self, text):
-#         api_key = 'AIzaSyATP0DR9mYqI45FF1JQrmAcwvZuBQoRI9U'  # Replace with your Perspective API key
-
-#         # API endpoint for analyzing text toxicity
-#         perspective_api_url = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze'
-
-#         # Parameters for the API request
-#         params = {
-#             'key': api_key,
-#         }
-
-#         # Request body containing the text to analyze
-#         json_data = {
-#             'comment': {'text': text},
-#             'languages': ['en'],  # Assuming English language
-#             'requestedAttributes': {'TOXICITY': {}},  # Request toxicity score
-#         }
-
-#         try:
-#             # Make POST request to Perspective API
-#             response = requests.post(perspective_api_url, params=params, json=json_data)
-
-#             if response.status_code == 200:
-#                 data = response.json()
-#                 toxicity_score = data['attributeScores']['TOXICITY']['summaryScore']['value']
-#                 print("Toxicity score:", toxicity_score)  # Debugging print
-#                 return toxicity_score
-#             else:
-#                 # Handle API error
-#                 print("API error:", response.status_code, response.reason)  # Debugging print
-#                 return None
-#         except Exception as e:
-#             # Handle other exceptions
-#             print("Exception during API call:", e)  # Debugging print
-#             return None
-
 
 
 class CreateBlog(FormView):
@@ -113,7 +52,7 @@ class CreateBlog(FormView):
         if len(title_check) > 0 and len(result) > 0:
             return HttpResponse('invalid content')
         else:
-            # obj.save()
+            obj.save()
             print('content good')
             return super().form_valid(form)
         # obj.save()
@@ -136,11 +75,12 @@ def BlogDetail(request,pk):
                 return redirect('account:userLogin')
         
     if request.method == 'POST':
-        comment_id = request.POST.get('comment_id')
+        comment_id = request.POST.get('parent_comment_id')
         comment = request.POST.get('reply')
+        print(comment_id,comment)
         
         BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None
-        print('saved')
+        # print('saved')
 
         # return render(reverse('blog:blog_detail',args = (blog_model.id,)))
     blog_comment_model = BlogCommentModel.objects.filter(blog_id = pk)
@@ -172,10 +112,6 @@ class UpdateBlog(UpdateView):
         messages.success(self.request,"blog updated!")
         return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
 
-
-# def DeleteBlog(request,pk):
-#     CreateBlogModel.objects.get(id = pk).delete()
-#     return redirect(reverse('blog:home'))
     
 class DeleteBlog(DeleteView):
     model = CreateBlogModel

@@ -3,6 +3,7 @@ from django.db import models
 from tinymce.widgets import TinyMCE
 
 from blog.models import CreateBlogModel,BlogCommentModel
+from account.models import Profile
 
 
 admin.site.register(BlogCommentModel)
@@ -14,3 +15,4 @@ class YourModelAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CreateBlogModel,YourModelAdmin)
+admin.site.register(Profile)

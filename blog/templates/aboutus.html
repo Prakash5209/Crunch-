@@ -1,3 +1,253 @@
 {% extends 'base.html' %}
 {% block content %}
+<!-- <style>
+    *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    }
+    .section{
+        width: 100%;
+
+    }
+    .section .container{
+        width: 80%;
+        display: block;
+        margin: 0 auto;
+    padding: 50px 0px;
+
+    }
+    .container .title{
+        width: 100%;
+        text-align: center;
+        margin-bottom: 50px;
+
+    }
+    .container .title h1{
+    text-transform: uppercase;
+    font-size: 35px;
+    color: #88941e;
+
+    }
+    .container .title h1::after{
+        content: "";
+        width: 180px;
+        height: 5px;
+        margin: auto;
+        color: black;
+        background-color: black;
+        display: block;
+    
+    }
+    .content{
+        float: left;
+    width: 55%;
+    }
+    .image-section{
+        width: 40%;
+        float: right;
+    }
+    .image-section img{
+        width: 100%;
+        height: auto;
+
+    }
+    .content .article h3{
+        color:#222;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        letter-spacing: .8px;
+    font-size: 19px;
+
+    }
+    .content .article p{
+        margin-top: 20px;
+        font-size: 17px;
+        line-height: 1.5;
+        color: #333;
+
+    }
+    .content .article .button{
+        margin-top: 50px;
+
+    }
+    .content .article .button a{
+        text-decoration: none;
+        padding: 8px 25px;
+        background-color:#88941e;
+        border-radius: 40px;
+        color: #fff;
+        font-size: 18px;
+        letter-spacing: 1.5px;
+
+    }
+    .content .article .button a:hover{
+        color: #fff;
+        background-color:#f28f92;
+        transition: 1s ease;
+
+    }
+    .container .social{
+        width: 100%;
+        clear: both;
+        margin-top: 50px;
+        text-align: center;
+        display: inline-block;
+
+    }
+    .container .social i{
+        color: #fff;
+        font-size: 22px;
+        height: 45px;
+        width: 45px;
+        background-color: rgb(199, 88, 88);
+        border: 2px solid black;
+        border-radius: 50%;
+        align-items: center;
+        line-height: 45px;
+        text-align:center;
+        margin-top:  0 10px;
+
+    }
+    .container .social i:hover{
+        color: cornflowerblue;
+        background-color: darkgray;
+        transition: 1s ease;
+        transform: rotate(360deg);
+
+    }
+    /* medai screen and */
+
+    @media screen and (max-width:768px){
+        .section .container{
+            width: 80%;
+            display: block;
+            margin: auto;
+
+        }
+        .content{
+            float: none;
+            width: 100%;
+            display: block;
+            margin: auto;
+        }
+        .image-section{
+            float: none;
+            width: 100%;
+            margin-top: 50px;
+
+        }
+        .image-section img{
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+
+        }
+        .container .title h1{
+            text-align: center;
+            font-size: 30pxpx;
+
+        }
+        .container .article .button{
+            text-align: center;
+
+        }
+        .container .article .button a{
+            padding: 6px 15px;
+            font-size: 16px;
+
+        }
+        .container .social i{
+            font-size: 19px;
+            width: 35px;
+            height: 35px;
+            line-height: 35px;
+            
+        }
+    }
+</style>
+<div class="section">
+    <div class="container">
+        <div class="title">
+            <h1>About Us</h1>
+
+        </div>
+        <div class="content">
+            <div class="article">
+                <h3>Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia perferendis ab rem!</h3>
+                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vero est aut officia voluptas
+                    laboriosam soluta modi deserunt eius, repudiandae enim dolor nisi. Officiis sed architecto neque
+                    aspernatur temporibus facere esse rem veniam.</p>
+                <div class="button">
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+
+        </div>
+        <div class="image-section">
+            <img src="https://cdn.theasc.com/ac0113_DU_01.JPG" alt="PICK">
+        </div>
+        <div class="social">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+</div> -->
+
+<header class="bg-light p-3">
+    <h1 class="text-center font-weight-bold">About Us</h1>
+</header>
+<main class="container py-5">
+    <div class="row">
+        <div class="col-lg-6">
+            <img src="https://cdn.theasc.com/ac0113_DU_01.JPG" alt="Company Image" class="img-fluid">
+        </div>
+        <div class="col-lg-6">
+            <h2 class="font-weight-bold">Welcome to Our Company</h2>
+            <p class="mb-4">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+            </p>
+            <a href="#" class="btn btn-primary">Learn More</a>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-lg-6">
+            <img src="https://via.placeholder.com/600x400" alt="Image 4" class="img-fluid mb-3">
+            <h3>Feature 1</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
+        </div>
+        <div class="col-lg-6">
+            <img src="https://via.placeholder.com/600x400" alt="Image 5" class="img-fluid mb-3">
+            <h3>Feature 2</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
+        </div>
+    </div>
+
+    <!-- Additional Content -->
+    <div class="row mt-5">
+        <div class="col-lg-4">
+            <img src="https://via.placeholder.com/300" alt="Image 1" class="img-fluid mb-3">
+            <h3>Service 1</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
+        </div>
+        <div class="col-lg-4">
+            <img src="https://via.placeholder.com/300" alt="Image 2" class="img-fluid mb-3">
+            <h3>Service 2</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
+        </div>
+        <div class="col-lg-4">
+            <img src="https://via.placeholder.com/300" alt="Image 3" class="img-fluid mb-3">
+            <h3>Service 3</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio.</p>
+        </div>
+    </div>
+
+</main>
+
+  
 {% endblock %}

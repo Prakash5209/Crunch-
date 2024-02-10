@@ -4,7 +4,6 @@ from django.conf import settings
 
 class Status(models.TextChoices):
     DRAFT = 'draft','DRAFT',
-    # PENDING = 'pending','PENDING',
     PUBLIC = 'public','PUBLIC',
 
 class TimeStampModel(models.Model):
@@ -34,7 +33,7 @@ class BlogCommentModel(TimeStampModel):
     comment = models.TextField()
 
     def __str__(self):
-        return f'{self.comment[:20]}..., by:{self.user}, post_id:{self.blog_id.id}'
+        return f'{self.comment[:20]}..., by:{self.user}'
 
 
 # class LikeModel(models.Model):
