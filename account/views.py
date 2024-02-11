@@ -65,7 +65,7 @@ def userSignup(request):
     if form.is_valid():
         user = form.save()
         Profile.objects.create(user = user)
-        return redirect('blog:userLogin')
+        return redirect('account:userLogin')
     print(request.POST.get('email'))
     return render(request,'signup.html',context={'form':form})
 
