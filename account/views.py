@@ -50,7 +50,7 @@ class ViewProfile(View):
         # Retrieve the User object based on the provided pk
         user = get_object_or_404(User, id=pk)
         
-        profile_model = get_object_or_404(Profile, user_id=pk)
+        profile_model = get_object_or_404(Profile, user_id=pk,user = request.user)
         form = ProfileForm(request.POST,request.FILES or None, instance=profile_model)
         
         if form.is_valid():

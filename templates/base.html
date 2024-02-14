@@ -23,8 +23,51 @@
     {% endblock %}
 
     <style>
-        body{
-            background-color: white;
+		html{
+			height: 100%;
+			box-sizing: border-box;
+		}
+		body{
+			position: relative;
+			margin: 0;
+			min-height: 100%;
+			padding-bottom: 400px;
+			box-sizing: inherit;
+		}
+        .body-container{
+			min-height: 80vh;
+		}
+
+        /* footer */
+        .p-1 div ul li a{
+            color: #BBBBBB;
+            text-decoration: none;
+        }
+        .p-1 div ul{
+            padding: 0;
+            margin: 0;
+        }
+        .p-1 div ul li{
+            list-style: none;
+        }
+        .p-1 div ul li a:hover{
+            color:#ECECEC;
+        }
+        .info li a:hover{
+            color: #BBBBBB;
+            cursor: auto;
+        }
+        .info li div a{
+            padding: 5px;
+        }
+        .info li div a i:hover{
+            cursor: pointer;
+        }
+        .footer{
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
     </style>
 
@@ -33,10 +76,13 @@
     {% block navbar %}
         {% include 'navbar.html' %}
     {% endblock %}
-    <div class="container">
+    <div class="container body-container">
         {% block content %}
         {% endblock %}
     </div>
+    {% block footer %}
+        {% include 'footer.html' %}
+    {% endblock %}
 
 </body>
 </html>
