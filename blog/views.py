@@ -1,4 +1,3 @@
-from typing import Any
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404,render,redirect
 from django.urls import reverse_lazy,reverse
@@ -15,7 +14,7 @@ import re
 
 from account.models import User
 from blog.models import CreateBlogModel,BlogCommentModel
-from account.models import User
+from account.models import User,Follow
 from blog.forms import CreateBlogForm,CommentForm
 
 from decouple import config
@@ -27,12 +26,13 @@ class Home(ListView):
 
     def get_queryset(self):
         return CreateBlogModel.objects.filter(status = 'public')
+    
 
 def search_feature(request):
     if request.method == 'POST':
         search_query = request.POST.get('search')
         print(search_query)
-        blog_model = CreateBlogModel.objects.filter(Q(title__icontains=search_query) | Q(content__icontains=search_query))
+        blog_model = CreateBlogModel.objects.filter(Q(title__icontains=search_query))
         context = {'query':search_query,'searched':blog_model}
         return render(request,'home.html',context)
         
@@ -68,7 +68,7 @@ class CreateBlog(FormView):
 def BlogDetail(request,pk):
     blog_model = get_object_or_404(CreateBlogModel,status = 'public',id = pk)
 
-    blog_comment_form = CommentForm(request.POST or None)
+    blog_comment_form = CommentForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST':
         if blog_comment_form.is_valid():
@@ -101,20 +101,11 @@ class UpdateBlog(UpdateView):
     # fields = ['title','content']
     template_name = 'create_blog.html'
     form_class = CreateBlogForm
-    success_url = '/'
 
-    # def form_valid(self, form):
-    #     self.object = form.save()
-    #     return super().form_valid(form)
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-        
-    #     # Check if the post is a new one
-    #     context['is_new_post'] = not self.object.pk
-        
-    #     return context
-
+    def form_valid(self, form):
+        self.object = form.save()
+        return super().form_valid(form)
+    
     def get_success_url(self):
         messages.success(self.request,"blog updated!")
         return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
@@ -133,4 +124,3 @@ class Contactpage(TemplateView):
     template_name = 'contactus.html'
 
 
-    # AIzaSyATP0DR9mYqI45FF1JQrmAcwvZuBQoRI9U

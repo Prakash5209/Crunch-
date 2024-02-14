@@ -21,7 +21,7 @@ class ProfileForm(forms.ModelForm):
     last_name = forms.CharField()
     class Meta:
         model = Profile
-        fields = ['first_name','last_name','avatar','address','dob','gender','bio']
+        fields = ['avatar','first_name','last_name','address','dob','gender','bio']
 
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)

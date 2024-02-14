@@ -1,7 +1,26 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
+<style>
+  .navbar{
+    background-color: #D0D3D4;
+  }
+  .navbar a{
+    color:#092635;
+  }
+  .navbar-nav{
+    background-color: #D0D3D4;
+  }
+  .navbar_brand{
+    font-size: 2rem;
+  }
+  .dropdown-menu{
+    background-color: #D0D3D4;
+  }
+
+</style>
+
+<nav class="navbar navbar-expand-lg mb-3">
   <div class="container">
     <!-- Brand/logo -->
-    <a class="navbar-brand" href="{% url 'blog:home' %}">Crunch Blog</a>
+    <a class="navbar-brand p-2 navbar_brand" href="{% url 'blog:home' %}">Crunch Blog</a>
 
     <!-- Burger button for mobile devices -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

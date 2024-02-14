@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
+from django.conf import settings
 
 
 class CustomUserManager(BaseUserManager):
@@ -56,3 +57,12 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.email
+    
+
+class Follow(models.Model):
+    youser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name = 'account')
+    follow = models.ForeignKey(User,on_delete=models.CASCADE,related_name='user_id')
+
+    def __str__(self):
+        return self.youser.email
+
