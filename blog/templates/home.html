@@ -32,73 +32,107 @@
     flex-direction: column;
   }
 }
+
+.form-control{
+  background-color: #ECF0F1;
+}
+.card{
+  background-color: #F7F9F9;
+  transition: 250ms;
+}
+.card:hover{
+  box-shadow:2px 2px 10px 5px rgb(203, 203, 203);
+}
+.card-header a{
+  color: rgb(78, 78, 78);
+  font-size:larger;
+}
 </style>
 
 
 <div class="container">
   <div class="row">
-    <div class="col-8">
+    <div class="col-lg-8"> <!-- Use col-lg-* for large screens, col-md-* for medium screens, and col-* for small screens -->
 
+
+      <form method="post" action="{% url 'blog:search_feature' %}">
+        {% csrf_token %}
+        <div class="input-group mb-3 search-bar">
+          <input type="text" class="form-control" placeholder="search..." aria-label="Recipient's username" name="search" aria-describedby="inputGroup-sizing-lg">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+          </div>
+        </div>
+      </form>
+<!-- 
       <div class="flex-container mt-3">
         <form method="post" action="{% url 'blog:search_feature' %}">
-          {% csrf_token %}
-          <input class="form-control" type="search" placeholder="search..." name="search" aria-label="Search" width="100%">
+            {% csrf_token %}
+            <input class="form-control" type="search" placeholder="search..." name="search" aria-label="Search" style="width:  100%;">
         </form>
-        <!-- <div class="flex-item-left border">
-          <form class="form">
-          </form>
-        </div>
-        <div class="flex-item-right border p-3">
-          <a href="#">Keyboard</a>
-          <a href="#">Mouse</a>
-          <a href="#">Computer</a>
-          <a href="#">Java</a>
-        </div> -->
-      </div>
+      </div> -->
+    
+    
+      
       {% if query %}
         {% if searched %}
           {% for i in searched %}
-          <div id="content_{{i.id}}" class="card mt-3">
-            <div class="card-header">
-              <div>
-                <a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
+            <div id="content_{{i.id}}" class="card mt-3">
+              <div class="card-header">
+                <div>
+                  <a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
+                </div>
+              </div>
+              <div class="card-body py-0 px-2">
+                <blockquote class="blockquote mb-0">
+                  <p><small>{{i.content|striptags|slice:":200"|lower|safe}}...</small></p>
+                  <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
+                </blockquote>
               </div>
             </div>
-            <div class="card-body py-0 px-2" >
-              <blockquote class="blockquote mb-0">
-                <!-- <p><small>{{object.content|safe|slice:":500"}}</small></p> -->
-                <!-- <p><small>{{object.content|slice:"0:200"}}</small></p> -->
-                <p><small>{{i.content|striptags|slice:":200"|lower|safe}}...</small></p>
-              <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
-            </blockquote>
-            </div>
-  
-          </div>
           {% endfor %}
         {% endif %}
       {% endif %}
             
-        {% for object in object_list %}
-        <div id="content_{{object.id}}" class="card mt-3">
+      {% for object in object_list %}
+        <!-- <div id="content_{{object.id}}" class="card mt-4">
           <div class="card-header">
             <div>
               <a href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
             </div>
           </div>
-          <div class="card-body py-0 px-2" >
+          <div class="card-body py-0 px-2">
             <blockquote class="blockquote mb-0">
-              <!-- <p><small>{{object.content|safe|slice:":500"}}</small></p> -->
-              <!-- <p><small>{{object.content|slice:"0:200"}}</small></p> -->
               <p><small>{{object.content|striptags|slice:":200"|lower|safe}}...</small></p>
-            <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
-          </blockquote>
+              <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
+            </blockquote>
           </div>
-
-        </div>
-        {% endfor %}
+        </div> -->
+        <div id="content_{{object.id}}" class="card mt-4">
+          <div class="card-header">
+              <div>
+                  <a href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
+              </div>
+          </div>
+          <div class="card-body py-0 px-2">
+              <div class="row">
+                  <div class="col">
+                      <blockquote class="blockquote mb-0">
+                          <p><small>{{object.content|striptags|slice:":200"|lower|safe}}...</small></p>
+                          <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
+                      </blockquote>
+                  </div>
+                  <div class="col-auto">
+                      <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+      {% endfor %}
 
     </div>
-    <div class="col-4">
+    <div class="col-lg-4"> <!-- Use col-lg-* for large screens, col-md-* for medium screens, and col-* for small screens -->
       <div class="list-group">
         <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
           <div class="d-flex w-100 justify-content-between">
@@ -128,6 +162,7 @@
     </div>
   </div>
 </div>
+
 
 <script>
 </script>
