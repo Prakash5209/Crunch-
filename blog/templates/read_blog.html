@@ -27,15 +27,16 @@
   <div class="row">
     <div class="col-8">
       {% if request.user == blog_model.user %}
-      <a href="{% url 'blog:update_blog' blog_model.id %}">Edit</a>
-      <a href="" data-toggle="modal" data-target="#exampleModal">Delete</a><br>
+      <a href="{% url 'blog:update_blog' blog_model.id %}" class="btn btn-primary">Edit</a>
+      <a href="" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary">Delete</a><br>
       {% endif %}
+      <br>
       {% if blog_model.image %}
         <img src=" {{blog_model.image.url}}" alt="superman" width="100%">
       {% endif %}
       <strong>{{blog_model.user}}</strong>
       <p>{{blog_model.created_at}}</p>
-      <h3>{{blog_model.title }}</h3>
+      <h1>{{blog_model.title }}</h1>
       {{blog_model.content | safe}}
     </div>
     <div class="col-4 border p-3">

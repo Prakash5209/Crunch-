@@ -5,8 +5,8 @@
 				<div>
 					<p class="fs-6">Employers</p><hr>
 					<ul>
-						<li><a href="">Register</a></li>
-						<li><a href="">Contact Us</a></li>
+						<li><a href="{% url 'account:userSignup' %}">Register</a></li>
+						<li><a href="{% url 'blog:Contactpage' %}">Contact Us</a></li>
 					</ul>
 				</div>
 			</div>
@@ -14,8 +14,8 @@
 				<div>
 					<p class="fs-6">Readers</p><hr>
 					<ul>
-						<li><a href="">Register</a></li>
-						<li><a href="">Login</a></li>
+						<li><a href="{% url 'account:userSignup' %}">Register</a></li>
+						<li><a href="{% url 'account:userLogin' %}">Login</a></li>
 						<li><a href="">Search article</a></li>
 					</ul>
 				</div>
@@ -24,21 +24,20 @@
 				<div>
 					<p class="fs-6">Links</p><hr>
 					<ul>
-						<li><a href="">Jobs</a></li>
-						<li><a href="">Blog</a></li>
-						<li><a href="">Contact Us</a></li>
-						<li><a href="">About Us</a></li>
+						<li><a href="{% url 'blog:home' %}">Blog</a></li>
+						<li><a href="{% url 'blog:Contactpage' %}">Contact Us</a></li>
+						<li><a href="{% url 'blog:Aboutpage' %}">About Us</a></li>
 					</ul>
 				</div>
 			</div>
 			<div class="p-1">
 				<div>
-					<p class="fs-5">Sabai ko jobs</p><hr>
+					<p class="fs-5">Crunch</p><hr>
 					<ul class="info">
-						<li><a href="#">Sabai ko jobs</a></li>
+						<li><a href="{% url 'blog:home' %}">Crunch</a></li>
 						<li><a href="#">Address</a></li>
 						<li><a href="#">Phone no</a></li>
-						<li><a href="#">info@sabaikojobs.com</a></li>
+						<li><a href="#">info@Crunch.com</a></li>
 						<li>
 							<div class="d-flex flex-row mb-3">
 								<a href="#"><i class="fa-brands fa-facebook"></i></a>

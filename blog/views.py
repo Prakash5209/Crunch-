@@ -107,8 +107,14 @@ class UpdateBlog(UpdateView):
         return super().form_valid(form)
     
     def get_success_url(self):
-        messages.success(self.request,"blog updated!")
-        return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
+        var =  self.request.POST.get('status')
+        if var == 'public':
+            messages.success(self.request,"blog updated!")
+            return reverse_lazy('blog:blog_detail',kwargs={'pk':self.object.pk})
+        else:
+            messages.success(self.request,"blog updated!")
+            return reverse_lazy('blog:home')
+        # return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
 
     
 class DeleteBlog(DeleteView):

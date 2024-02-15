@@ -95,19 +95,6 @@
       {% endif %}
             
       {% for object in object_list %}
-        <!-- <div id="content_{{object.id}}" class="card mt-4">
-          <div class="card-header">
-            <div>
-              <a href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
-            </div>
-          </div>
-          <div class="card-body py-0 px-2">
-            <blockquote class="blockquote mb-0">
-              <p><small>{{object.content|striptags|slice:":200"|lower|safe}}...</small></p>
-              <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
-            </blockquote>
-          </div>
-        </div> -->
         <div id="content_{{object.id}}" class="card mt-4">
           <div class="card-header">
               <div>
@@ -123,7 +110,11 @@
                       </blockquote>
                   </div>
                   <div class="col-auto">
+                    {% if object.image %}
+                      <img src="{{object.image.url}}" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                    {% else %}
                       <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                    {% endif %}
                   </div>
               </div>
           </div>
