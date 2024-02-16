@@ -11,5 +11,5 @@ urlpatterns = [
     path('search/',search_feature,name='search_feature'),
     path('delete-blog/<int:pk>/',DeleteBlog.as_view(),name="delete_blog"),
     path('about-us/',Aboutpage.as_view(),name='Aboutpage'),
-    path('contact-us/',Contactpage.as_view(),name='Contactpage')
+    path('contact-us/',Contactpage.as_view(),name='Contactpage'),
 ]

@@ -89,7 +89,6 @@ def BlogDetail(request,pk):
         BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None
         # print('saved')
 
-        # return render(reverse('blog:blog_detail',args = (blog_model.id,)))
     blog_comment_model = BlogCommentModel.objects.filter(blog_id = pk)
 
     context = {'blog_model':blog_model,'blog_comment_form':blog_comment_form,'blog_comments':blog_comment_model}

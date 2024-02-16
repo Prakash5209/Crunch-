@@ -34,7 +34,7 @@ class BlogCommentModel(TimeStampModel):
 
     def __str__(self):
         return f'{self.comment[:20]}..., by:{self.user}'
-
+    
 
 # class LikeModel(models.Model):
 #     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)

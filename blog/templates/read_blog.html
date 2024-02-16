@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block content %}
 
 <style>
@@ -15,7 +16,8 @@
     display: block;
 }
 
-</style>
+</style>  
+
 
 {% if messages %}
   {% for message in messages %}
@@ -39,6 +41,8 @@
       <h1>{{blog_model.title }}</h1>
       {{blog_model.content | safe}}
     </div>
+
+
     <div class="col-4 border p-3">
       <form method="post">
         {% csrf_token %}
