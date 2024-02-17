@@ -15,7 +15,12 @@
 .replies.show {
     display: block;
 }
-
+.checked{
+  color: red;
+}
+.unchecked{
+  color:gray;
+}
 </style>  
 
 
@@ -40,6 +45,11 @@
       <p>{{blog_model.created_at}}</p>
       <h1>{{blog_model.title }}</h1>
       {{blog_model.content | safe}}
+
+      <div>
+        <a id="dataContainer" href="{% url 'blog:like_post' blog_model.id %}"><i id="like_icon"></i></a>&nbsp;<span id="likes" style="font-size: 1.2rem;"></span>
+        <i class="fa-regular fa-comment fa-xl"></i>
+      </div>
     </div>
 
 
@@ -123,50 +133,6 @@
 
 
 <script>
-  // const reply_field = document.querySelectorAll('.reply-field');
-  // reply_field.forEach(function(reply_field){
-  //   reply_field.addEventListener('click',add_input_function);
-  // });
-
-
-  // function add_input_function(e) {
-  //   var comment_section = e.target.closest('.comment_section');
-
-  //   if (comment_section && !comment_section.querySelector('.form-control[name="comment_id"]')) {
-  //       var commentId = comment_section.dataset.commentId;
-
-  //       // Create a new form element
-  //       var replyForm = document.createElement('form');
-  //       replyForm.setAttribute('method', 'post');
-
-
-  //       var csrfTokenInput = document.createElement('input');
-  //       csrfTokenInput.setAttribute('type','hidden');
-  //       csrfTokenInput.setAttribute('name','csrfmiddlewaretoken');
-  //       csrfTokenInput.setAttribute('value','{{ csrf_token }}');
-
-  //       // Create a hidden input for the comment id
-  //       var commentIdInput = document.createElement('input');
-  //       commentIdInput.setAttribute('type', 'hidden');
-  //       commentIdInput.setAttribute('name', 'comment_id');
-  //       commentIdInput.setAttribute('value', commentId);
-
-  //       // Create the reply input
-  //       var comment_field = document.createElement('input');
-  //       comment_field.setAttribute('placeholder', 'reply');
-  //       comment_field.setAttribute('class', 'form-control');
-  //       comment_field.setAttribute('name', 'reply');
-
-  //       // Append both inputs to the form
-  //       replyForm.appendChild(csrfTokenInput);
-  //       replyForm.appendChild(commentIdInput);
-  //       replyForm.appendChild(comment_field);
-        
-
-  //       // Append the form to the comment section
-  //       comment_section.appendChild(replyForm);
-  //   }
-  // }
 
   document.addEventListener("DOMContentLoaded", function() {
     const replyLinks = document.querySelectorAll('.reply-field');
@@ -198,6 +164,23 @@
       }
     }
   });
+
+  const datacontainer = document.getElementById('dataContainer').getAttribute('href');
+  console.log(datacontainer);
+  fetch(datacontainer)
+    .then(response => response.json())
+    .then(data =>{
+      console.log(data)
+      console.log(data.is_like)
+      if(data.is_like){
+        document.getElementById('like_icon').setAttribute('class','fa-solid fa-heart fa-xl checked')
+      }else{
+        document.getElementById('like_icon').setAttribute('class',"fa-regular fa-heart fa-xl unchecked")
+      } 
+      document.getElementById('likes').innerHTML = data.like;
+    })
+    .catch(error => console.error("Error",error));
+
 </script>
 
 {% endblock %}

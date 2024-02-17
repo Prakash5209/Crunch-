@@ -8,12 +8,13 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView,DeleteView,CreateView
 from django.contrib import messages
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.db.models import Q
 import re
+from django.contrib.auth.decorators import login_required
 
 from account.models import User
-from blog.models import CreateBlogModel,BlogCommentModel
+from blog.models import CreateBlogModel,BlogCommentModel,LikeModel
 from account.models import User,Follow
 from blog.forms import CreateBlogForm,CommentForm
 
@@ -93,7 +94,23 @@ def BlogDetail(request,pk):
 
     context = {'blog_model':blog_model,'blog_comment_form':blog_comment_form,'blog_comments':blog_comment_model}
     return render(request,'read_blog.html',context)
-    
+
+@login_required
+def like_post(request,pk):
+    post = get_object_or_404(CreateBlogModel,id = pk)
+    like,not_created = LikeModel.objects.get_or_create(post = post,user = request.user)
+    if not_created:
+        if like.is_liked:
+            like.is_liked = True
+        else:
+            like.is_liked = False
+        like.save()
+        # return redirect(reverse('blog:blog_detail',kwargs={'pk':pk}))
+    total_likes = LikeModel.objects.filter(is_liked = True,post = post).count()
+    # context={'like':total_likes}
+    print(total_likes)
+    return JsonResponse({'like':total_likes,'is_like':like.is_liked},safe=False)
+    # return render(request,'read_blog.html',context)
 
 class UpdateBlog(UpdateView):
     model = CreateBlogModel
