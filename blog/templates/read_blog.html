@@ -34,8 +34,8 @@
   <div class="row">
     <div class="col-8">
       {% if request.user == blog_model.user %}
-      <a href="{% url 'blog:update_blog' blog_model.id %}" class="btn btn-primary">Edit</a>
-      <a href="" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary">Delete</a><br>
+      <a href="{% url 'blog:update_blog' blog_model.id %}" class="btn btn-primary btn-sm">Edit</a>
+      <a href="" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary btn-sm">Delete</a><br>
       {% endif %}
       <br>
       {% if blog_model.image %}
@@ -70,16 +70,6 @@
 
 
       <h3>Comment Section</h3>
-      <!-- {% for comments in blog_comments %}
-      <div class="comment_section" data-comment-id="{{comments.id}}">
-        <p>{{comments.user}}: {{  comments.comment }} <span>{% if request.user.is_authenticated %}<a href="#" class="reply-field">reply</a>{% endif %}</span></p>
-        {% for com in blog_comments %}
-            {% if com.id == comments.parent_comment %}
-              <p>{{com}}</p>
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% endfor %} -->
       <ol>
       {% for comment in blog_comments %}
         {% if not comment.parent_comment %}
@@ -88,7 +78,7 @@
             {% for j in blog_comments %}
               {% if j.parent_comment == comment %}
                 <div data-child-id="{{j.id}}">
-                  <strong>{{j}}<input type="hidden" name="child_id" value="{{j.id}}"><span>{% if request.user.is_authenticated %}<a href="#" class="reply-field">reply</a>{% endif %}</span></strong>
+                  <strong>{{j.comment}}<input type="hidden" name="child_id" value="{{j.id}}"><span>{% if request.user.is_authenticated %}<a href="#" class="reply-field">reply</a>{% endif %}</span></strong>
                 </div>
               {% endif %}
             {% endfor %}
@@ -102,7 +92,7 @@
 
 
 <!-- Button trigger modal -->
-<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+<!-- <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">
   Launch demo modal
 </button> -->
 
@@ -117,7 +107,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to delete this!{{blog_model.id}}</p>  
+        <p>Are you sure you want to delete this!</p>  
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">cancel</button>
@@ -157,8 +147,8 @@
         form.innerHTML = `
           {% csrf_token %}
           <input type="hidden" name="parent_comment_id" value="${parentDiv.dataset.parentId}">
-          <textarea name="reply" placeholder="Your reply"></textarea>
-          <button type="submit">Submit</button>
+          <input name="reply" placeholder="Your reply" class="form-control"></input>
+          <button type="submit" class="btn btn-primary btn-sm btn-sm">Submit</button>
         `;
         parentDiv.appendChild(form);
       }
