@@ -47,7 +47,7 @@
       {{blog_model.content | safe}}
 
       <div>
-        <a id="dataContainer" href="{% url 'blog:like_post' blog_model.id %}"><i id="like_icon"></i></a>&nbsp;<span id="likes" style="font-size: 1.2rem;"></span>
+        <a id="dataContainer" href="{% url 'blog:like_post' blog_model.id %}"><i id="like_icon" class="{% if like %}fa fa-solid fa-heart fa-xl checked{% else %}fa fa-regular fa-heart fa-xl unchecked{% endif %}"></i></a>&nbsp;<span id="likes" style="font-size: 1.2rem;">{{total_likes}}</span>
         <i class="fa-regular fa-comment fa-xl"></i>
       </div>
     </div>
@@ -155,21 +155,21 @@
     }
   });
 
-  const datacontainer = document.getElementById('dataContainer').getAttribute('href');
-  console.log(datacontainer);
-  fetch(datacontainer)
+
+  document.getElementById('like_icon').addEventListener('click',(e)=>{
+    e.preventDefault()
+    fetch('{% url 'blog:like_post' blog_model.id %}')
     .then(response => response.json())
-    .then(data =>{
-      console.log(data)
-      console.log(data.is_like)
-      if(data.is_like){
+    .then(data => {
+      if(data.status){
         document.getElementById('like_icon').setAttribute('class','fa-solid fa-heart fa-xl checked')
+        document.getElementById('likes').innerHTML = data.total
       }else{
         document.getElementById('like_icon').setAttribute('class',"fa-regular fa-heart fa-xl unchecked")
-      } 
-      document.getElementById('likes').innerHTML = data.like;
+        document.getElementById('likes').innerHTML = data.total
+      }
     })
-    .catch(error => console.error("Error",error));
+  })
 
 </script>
 
