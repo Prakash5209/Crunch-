@@ -38,53 +38,16 @@
     </button>
 
     <!-- Navbar links -->
-<div class="collapse navbar-collapse" id="navbarNav">
-  <!-- Left-aligned links -->
-  <ul class="navbar-nav">
-    <li class="nav-item {% if request.path == '/' %}active{% endif %}">
-      <a class="nav-link" href="{% url 'blog:home' %}">Home</a>
-    </li> 
-    <li class="nav-item {% if request.path == '/about-us/' %}active{% endif %}">
-      <a class="nav-link" href="{% url 'blog:Aboutpage' %}">About Us</a>
-    </li>
-    <li class="nav-item {% if request.path == '/contact-us/' %}active{% endif %}">
-      <a class="nav-link" href="{% url 'blog:Contactpage' %}">Contact Us</a>
-    </li>
-  </ul>
-
-  <!-- Right-aligned links and dropdown -->
-  <ul class="navbar-nav ml-auto">
-    {% if request.user.is_authenticated %}
-    <li class="nav-item {% if request.path == '/create-blog/' %}active{% endif %}">
-      <a class="nav-link" href="{% url 'blog:create_blog' %}">write</a>
-    </li>
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle {% if request.path == '/account/profileview/2/' %}active{% endif %}" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{request.user.email}}</a>
-      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <a class="dropdown-item" href="{% url 'account:ProfileView' request.user.id %}">Profile</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="{% url 'account:userLogout' %}">Logout</a>
-      </div>
-    </li>
-    {% else %}
-    <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'account:userLogin' %}">Login</a>
-    <a class="nav-link {% if request.path == '/signup/' %}active{% endif %}" href="{% url 'account:userSignup' %}">Signup</a>
-    {% endif %}
-  </ul>
-</div>
-
-
-    <!-- Navbar links -->
-    {% comment %} <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="collapse navbar-collapse" id="navbarNav">
       <!-- Left-aligned links -->
       <ul class="navbar-nav">
-        <li class="nav-item">
+        <li class="nav-item {% if request.path == '/' %}active{% endif %}">
           <a class="nav-link" href="{% url 'blog:home' %}">Home</a>
         </li> 
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'blog:Aboutpage' %}">About</a>
+        <li class="nav-item {% if request.path == '/about-us/' %}active{% endif %}">
+          <a class="nav-link" href="{% url 'blog:Aboutpage' %}">About Us</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item {% if request.path == '/contact-us/' %}active{% endif %}">
           <a class="nav-link" href="{% url 'blog:Contactpage' %}">Contact Us</a>
         </li>
       </ul>
@@ -92,11 +55,11 @@
       <!-- Right-aligned links and dropdown -->
       <ul class="navbar-nav ml-auto">
         {% if request.user.is_authenticated %}
-        <li class="nav-item">
+        <li class="nav-item {% if request.path == '/create-blog/' %}active{% endif %}">
           <a class="nav-link" href="{% url 'blog:create_blog' %}">write</a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{request.user.email}}</a>
+          <a class="nav-link dropdown-toggle {% if request.path == '/account/profileview/2/' %}active{% endif %}" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{request.user.email}}</a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="{% url 'account:ProfileView' request.user.id %}">Profile</a>
             <div class="dropdown-divider"></div>
@@ -104,10 +67,10 @@
           </div>
         </li>
         {% else %}
-        <a class="nav-link" href="{% url 'account:userLogin' %}">Login</a>
-        <a class="nav-link" href="{% url 'account:userSignup' %}">Signup</a>
+        <a class="nav-link {% if request.path == '/login/' %}active{% endif %}" href="{% url 'account:userLogin' %}">Login</a>
+        <a class="nav-link {% if request.path == '/signup/' %}active{% endif %}" href="{% url 'account:userSignup' %}">Signup</a>
         {% endif %}
       </ul>
-    </div> {% endcomment %}
+    </div>
   </div>
 </nav>
