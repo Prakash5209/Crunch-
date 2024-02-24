@@ -12,6 +12,7 @@ from django.http import HttpResponse,JsonResponse
 from django.db.models import Q
 import re
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from account.models import User
 from blog.models import CreateBlogModel,BlogCommentModel,LikeModel
@@ -36,7 +37,8 @@ def search_feature(request):
         blog_model = CreateBlogModel.objects.filter(Q(title__icontains=search_query))
         context = {'query':search_query,'searched':blog_model}
         return render(request,'home.html',context)
-        
+
+@method_decorator(login_required,name='dispatch')
 class CreateBlog(FormView):
     template_name = 'create_blog.html'
     form_class = CreateBlogForm
@@ -60,9 +62,12 @@ class CreateBlog(FormView):
         if len(title_check) > 0 and len(result) > 0:
             return HttpResponse('invalid content')
         else:
-            obj.save()
-            print('content good')
-            return super().form_valid(form)
+            if obj.user == self.request.user:
+                obj.save()
+                print('content good')
+                return super().form_valid(form)
+            else:
+                return render(self.request,'home.html')
         # obj.save()
     
     
@@ -131,6 +136,8 @@ def like_post(request,pk):
 #     return JsonResponse({'like':total_likes,'is_like':like.is_liked},safe=False)
 #     # return render(request,'read_blog.html',context)    
 
+
+@method_decorator(login_required,name='dispatch')
 class UpdateBlog(UpdateView):
     model = CreateBlogModel
     # fields = ['title','content']
@@ -151,11 +158,20 @@ class UpdateBlog(UpdateView):
             return reverse_lazy('blog:home')
         # return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
 
-    
+@method_decorator(login_required,name='dispatch')
 class DeleteBlog(DeleteView):
     model = CreateBlogModel
     success_url = reverse_lazy('blog:home')
     template_name = 'read_blog.html'
+
+@method_decorator(login_required,name='dispatch')
+def DeleteComment(request, pk):
+    comment_model = get_object_or_404(BlogCommentModel,id = pk,user = request.user)
+    comment_model.delete()
+    # print(request.path)
+    # return JsonResponse({'status':'we good'},safe=False)
+    # return redirect(reverse('blog:blog_detail',pk))
+    return redirect(reverse('blog:blog_detail', kwargs={'pk': comment_model.blog_id.id}))
 
 class Aboutpage(TemplateView):
     template_name = 'aboutus.html'

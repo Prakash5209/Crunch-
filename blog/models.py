@@ -32,9 +32,11 @@ class BlogCommentModel(TimeStampModel):
     parent_comment = models.ForeignKey('self',null = True,blank = True,on_delete=models.CASCADE,related_name = 'replies')
     comment = models.TextField()
 
-    def __str__(self):
-        return f'{self.comment[:20]}..., by:{self.user}'
+    # def __str__(self):
+    #     return f'{self.comment[:20]}..., by:{self.user}'
     
+    def __str__(self):
+        return f'{self.user}{self.comment}'
 
 # class LikeModel(models.Model):
 #     is_liked = models.BooleanField(default=False)
