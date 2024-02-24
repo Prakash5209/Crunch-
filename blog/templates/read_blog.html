@@ -3,24 +3,21 @@
 {% block content %}
 
 <style>
- .comment {
-    margin-bottom: 10px;
-}
 
-.replies {
-    margin-left: 20px;
-    display: none;
-}
+  {% comment %} .replies {
+      margin-left: 20px;
+      display: none;
+  } {% endcomment %}
 
-.replies.show {
-    display: block;
-}
-.checked{
-  color: red;
-}
-.unchecked{
-  color:gray;
-}
+  .replies.show {
+      display: block;
+  }
+  .checked{
+    color: red;
+  }
+  .unchecked{
+    color:gray;
+  }
 </style>  
 
 
@@ -31,8 +28,8 @@
 {% endif %}
 
 <!-- <div class="container"> -->
-  <div class="row">
-    <div class="col-8">
+<div class="row">
+    <div class="col-md-8">
       {% if request.user == blog_model.user %}
       <a href="{% url 'blog:update_blog' blog_model.id %}" class="btn btn-primary btn-sm">Edit</a>
       <a href="" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary btn-sm">Delete</a><br>
@@ -41,19 +38,18 @@
       {% if blog_model.image %}
         <img src=" {{blog_model.image.url}}" alt="superman" width="100%">
       {% endif %}
-      <strong>{{blog_model.user}}</strong>
+      <strong>{{blog_model.user.first_name}}</strong>
       <p>{{blog_model.created_at}}</p>
       <h1>{{blog_model.title }}</h1>
       {{blog_model.content | safe}}
 
       <div>
         <a id="dataContainer" href="{% url 'blog:like_post' blog_model.id %}"><i id="like_icon" class="{% if like %}fa fa-solid fa-heart fa-xl checked{% else %}fa fa-regular fa-heart fa-xl unchecked{% endif %}"></i></a>&nbsp;<span id="likes" style="font-size: 1.2rem;">{{total_likes}}</span>
-        <i class="fa-regular fa-comment fa-xl"></i>
       </div>
     </div>
 
 
-    <div class="col-4 border p-3">
+    <div class="col-md-4 border p-3">
       <form method="post">
         {% csrf_token %}
         {{ form }}
@@ -69,34 +65,107 @@
       </form>
 
 
-      <h3>Comment Section</h3>
-      <ol>
-      {% for comment in blog_comments %}
-        {% if not comment.parent_comment %}
-          <div data-parent-id="{{comment.id}}">
-            <li>{{comment.user}}:{{comment.comment}}<input type="hidden" id="parent_id" name="parent_id_comment" value="{{comment.id}}"><span>{% if request.user.is_authenticated %}<a href="#" class="reply-field">reply</a>{% endif %}</span></li>
-            {% for j in blog_comments %}
-              {% if j.parent_comment == comment %}
-                <div data-child-id="{{j.id}}">
-                  <strong>{{j.comment}}<input type="hidden" name="child_id" value="{{j.id}}"><span>{% if request.user.is_authenticated %}<a href="#" class="reply-field">reply</a>{% endif %}</span></strong>
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-        {% endif %}
-      {% endfor %}
-      </ol>
-    </div>
-  </div>    
-</div>
+      <div class="comment-section">
+        <h3>Comment Section</h3><hr>
+        <ol style="padding:0;list-style:none;">
+        {% for comment in blog_comments %}
+          {% if not comment.parent_comment %}
+            <div data-parent-id="{{comment.id}}" class="border rounded p-1 m-1">
+                <li style="padding:5"><strong>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg" class="rounded-circle" alt="img" width="30">
+                  {{comment.user}}<br></strong>{{comment.comment}}<input type="hidden" id="parent_id" name="parent_id_comment" value="{{comment.id}}">
+                  <span>
+                    {% if request.user.is_authenticated %}&nbsp;&nbsp;<a href="#" class="reply-field"><u>reply</u></a>&nbsp;
+                      {% if comment.user == request.user%}
+                      <a href="" id="delete_comment" data-target="#parentCommentId" data-toggle="modal"><u>delete</u>
+                      </a>
+                      {% endif %}
+                    {% endif %}
+                  </span>
+                </li>
 
+                  <!-- Modal child-comment deletion -->
+                  <div class="modal fade" id="parentCommentId" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Delete blog</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p>Are you sure you want to delete this comment, all reply will be deleted as well!</p>  
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">cancel</button>
+                          <form method="post" action="{% url 'blog:DeleteComment' comment.id %}">
+                            {% csrf_token %}
+                            <!-- <button type="submit" data-blog-id="{{blog_model}}" class="btn btn-danger">delete</button> -->
+                            <button type="submit" class="btn btn-secondary">delete</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                {% for j in blog_comments %}
+                  {% if j.parent_comment == comment %}
+                  <div data-child-id="{{j.id}}">
+                    <li>
+                      <ol style="list-style:none;">
+                        <li class="m-1">
+                          <strong>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg" class="rounded-circle" alt="img" width="30">
+                            {{j.user}}<br></strong>{{j.comment}}<input type="hidden" name="child_id" value="{{j.id}}"><span>{% if request.user.is_authenticated %}&nbsp;&nbsp;
+                            <a href="#" class="reply-field">reply</a>&nbsp;<a href="" id="delete_comment" data-toggle="modal" data-target="#deleteCommentModal" ><u>delete</u></a>{% endif %}
+                          </span>
+                        </li>
+                      </ol>
+                    </li>
+                  </div>
+
+                  <!-- Modal child-comment deletion -->
+                  <div class="modal fade" id="deleteCommentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Delete blog</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p>Are you sure you want to delete this comment!</p>  
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">cancel</button>
+                          <form method="post" action="{% url 'blog:DeleteComment' j.id %}">
+                            {% csrf_token %}
+                            <!-- <button type="submit" data-blog-id="{{blog_model}}" class="btn btn-danger">delete</button> -->
+                            <button type="submit" class="btn btn-secondary">delete</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {% endif %}
+                {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+        </ol>
+      </div>
+    </div>
+</div>
 
 <!-- Button trigger modal -->
 <!-- <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">
   Launch demo modal
 </button> -->
 
-<!-- Modal -->
+<!-- Modal blog deletion -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -122,7 +191,10 @@
 </div>
 
 
+
 <script>
+
+
 
   document.addEventListener("DOMContentLoaded", function() {
     const replyLinks = document.querySelectorAll('.reply-field');
@@ -146,15 +218,24 @@
         form.classList.add('reply-form');
         form.innerHTML = `
           {% csrf_token %}
-          <input type="hidden" name="parent_comment_id" value="${parentDiv.dataset.parentId}">
-          <input name="reply" placeholder="Your reply" class="form-control"></input>
-          <button type="submit" class="btn btn-primary btn-sm btn-sm">Submit</button>
-        `;
-        parentDiv.appendChild(form);
-      }
-    }
-  });
 
+          <div class="input-group mb-3">
+            <input type="hidden" name="parent_comment_id" value="${parentDiv.dataset.parentId}">
+            <input name="reply" type="text" class="form-control" placeholder="your reply" aria-label="Recipient's username" aria-describedby="button-addon2">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" type="submit" id="button-addon2">submit</button>
+            </div>
+          </div>
+
+          `;
+          parentDiv.appendChild(form);
+        }
+      }
+    });
+    
+    {% comment %} <input type="hidden" name="parent_comment_id" value="${parentDiv.dataset.parentId}">
+    <input name="reply" placeholder="Your reply" class="form-control"></input>
+    <button type="submit" class="btn btn-primary btn-sm btn-sm">Submit</button> {% endcomment %}
 
   document.getElementById('like_icon').addEventListener('click',(e)=>{
     e.preventDefault()
