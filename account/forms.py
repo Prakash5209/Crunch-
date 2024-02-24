@@ -17,8 +17,8 @@ class userSignupForm(UserCreationForm):
     
 
 class ProfileForm(forms.ModelForm):
-    first_name = forms.CharField()
-    last_name = forms.CharField()
+    first_name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
     class Meta:
         model = Profile
         fields = ['avatar','first_name','last_name','address','dob','gender','bio']

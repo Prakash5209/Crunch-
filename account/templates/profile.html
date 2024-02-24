@@ -1,8 +1,80 @@
 {% extends 'base.html' %}
 {% block content %}
+<script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+</script>
+
 <style>
+  .profile-name{
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  .intro{
+    padding:10px 0;
+  }
+</style>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4 text-center"> 
+      <div class="intro">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg" alt="user_image" width="300" class="rounded-circle">
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="intro">
+        <h3 class="profile-name">{{profile_model.user.first_name}}&nbsp;{{profile_model.user.last_name}}</h3>
+        <p>{{profile_model.address}}</p>
+        <p><i class="fa-solid fa-cake-candles"></i>&nbsp;{{profile_model.dob}}&nbsp;&nbsp;<span>{{profile_model.gender}}</span></p>
+
+        <p><a href="">followers:{{follower|length}}</a>&nbsp;&nbsp;<a href="">following:{{following|length}}</a></p>
+        <p>{{profile_model.bio}}</p>
+        <a href="mailto:recipient@example.com">{{profile_model.user.email}}</a><br><br>
+
+
+        {% if not profile_model.user == request.user %}
+          {% if follower %}
+          <a href="" class="btn btn-sm btn-primary">UnFollow</a>
+          {% else %}
+          <a href="" class="btn btn-sm btn-primary">Follow</a>
+          {% endif %}
+        {% endif %}
+
+
+      </div>
+      <hr>
+      <div>
+        <h3>Writting</h3>
+        {% if CreateBlogModel %}
+                {% for blog in CreateBlogModel.all %}
+                    <div id="content_{{ blog.id }}" class="card mt-3">
+                        <div class="card-header">
+                            <div>
+                                <a href="{% url 'blog:blog_detail' blog.id %}">{{ blog.title }}</a>
+                            </div>
+                        </div>
+                        <div class="card-body py-0 px-2">
+                            <blockquote class="blockquote mb-0">
+                                <p><small>{{ blog.content|striptags|slice:":200"|lower|safe }}...</small></p>
+                                <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
+                            </blockquote>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No blog available.</p>
+            {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+{% comment %} <style>
   .card{
-    background-color: #F7F9F9;
+    backgroundprofile_model-color: #F7F9F9;
     transition: 250ms;
   }
   .card:hover{
@@ -106,5 +178,5 @@
   
   </div>
   
-</div>
+</div> {% endcomment %}
 {% endblock %}
