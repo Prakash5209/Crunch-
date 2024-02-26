@@ -91,9 +91,6 @@ class FollowInProfile(View):
             Follow(youser=self.request.user,follow=User.objects.get(id=int(pk))).save()
             print('success follow')
             return redirect(reverse('account:ProfileView',args=(pk,)))
-
-            
-        print('okay')
         return render(request,'profile.html')
 
 

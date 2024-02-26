@@ -75,24 +75,43 @@ def BlogDetail(request,pk):
     blog_model = get_object_or_404(CreateBlogModel,status = 'public',id = pk)
 
     blog_comment_form = CommentForm(request.POST or None, request.FILES or None)
+    profan = config('profanity')
+    profan_list = profan.split('-')
 
     if request.method == 'POST':
         if blog_comment_form.is_valid():
-            obj = blog_comment_form.save(commit=False)
-            if request.user.is_authenticated:
-                obj.user = request.user 
-                obj.blog_id = blog_model
-                obj.save()
-                return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
+
+            raw_comment = blog_comment_form.cleaned_data['comment']
+
+            pattern = re.compile('<.*?>')
+            result = re.sub(pattern,'',raw_comment)
+            title_check = set(raw_comment.split(' ')).intersection(set(profan_list))
+
+            if len(title_check) > 0 and len(result) > 0:
+                return HttpResponse('invalid content')
             else:
-                return redirect('account:userLogin')
-        
+                    
+                obj = blog_comment_form.save(commit=False)
+                if request.user.is_authenticated:
+                    obj.user = request.user 
+                    obj.blog_id = blog_model
+                    obj.save()
+                    return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
+                else:
+                    return redirect('account:userLogin')
+            
     if request.method == 'POST':
         comment_id = request.POST.get('parent_comment_id')
         comment = request.POST.get('reply')
-        print(comment_id,comment)
-        
-        BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None
+        raw_reply = request.POST.get('reply')
+        pattern = re.compile('<.*?>')
+        result = re.sub(pattern,'',raw_reply)
+        title_check = set(raw_reply.split(' ')).intersection(set(profan_list))
+
+        if len(title_check) > 0 and len(result) > 0:
+            return HttpResponse('invalid content')
+        else:
+            BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None        
         # print('saved')
 
     blog_comment_model = BlogCommentModel.objects.filter(blog_id = pk)
