@@ -81,6 +81,21 @@ class ViewProfile(View):
     #     context = {'profile_model': profile_model, 'form': form}
     #     return render(request, 'profile.html', context)
 
+class FollowInProfile(View):
+    def get(self,request,pk):
+        if Follow.objects.filter(youser=self.request.user,follow=int(pk)).exists():
+            Follow.objects.filter(youser=self.request.user,follow=int(pk)).delete()
+            print('success unfollowed')
+            return redirect(reverse('account:ProfileView',args=(pk,)))
+        else:
+            Follow(youser=self.request.user,follow=User.objects.get(id=int(pk))).save()
+            print('success follow')
+            return redirect(reverse('account:ProfileView',args=(pk,)))
+
+            
+        print('okay')
+        return render(request,'profile.html')
+
 
 def userSignup(request):
     form = userSignupForm(request.POST or None)
