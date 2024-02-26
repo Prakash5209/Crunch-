@@ -1,8 +1,12 @@
+from typing import Any
+from django.forms import BaseModelForm
+from django.http import HttpResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import authenticate,get_user_model,logout,login
+from django.views.generic import UpdateView
 from django.contrib import messages
 from django.views import View
-from django.urls import reverse
+from django.urls import reverse,reverse_lazy
 from django.db.models import Q
 
 
@@ -49,12 +53,9 @@ class ViewProfile(View):
         return render(request, 'profile.html', context)
 
     # def post(self, request, pk):
-    #     # Retrieve the User object based on the provided pk
     #     user = get_object_or_404(User, id=pk)
-        
     #     profile_model = get_object_or_404(Profile, user_id=pk,user = request.user)
     #     form = ProfileForm(request.POST,request.FILES or None, instance=profile_model)
-        
     #     if form.is_valid():
     #         user = request.user
     #         user.first_name = form.cleaned_data.get('first_name')
@@ -62,24 +63,34 @@ class ViewProfile(View):
     #         user.save()
     #         form.save()
     #         print('Profile updated successfully')
-    #         # Redirect to the ProfileView with the updated user's id
     #         return redirect(reverse('account:ProfileView', kwargs={'pk': pk}))
-        
-    #     # if request.method == 'POST':
-    #     follow_input = request.POST.get('follow_input')
-    #     # ma = User.objects.get(id = follow_input)
-    #     print(follow_input)
-
-
-    #     if Follow.objects.filter(youser=self.request.user, follow=int(follow_input)).exists():
-    #         Follow.objects.filter(youser=self.request.user, follow=int(follow_input)).delete()
-    #         print('unfollow')
-    #     else:
-    #         Follow(youser=self.request.user,follow=User.objects.get(id=int(follow_input))).save()
-    #         print('follow')
 
     #     context = {'profile_model': profile_model, 'form': form}
     #     return render(request, 'profile.html', context)
+
+class UpdateProfile(UpdateView):
+    model = Profile
+    form_class=ProfileForm
+    template_name = 'update_profile.html'
+    # success_url = reverse_lazy('account:ProfileView',kwargs={'pk':object.pk})
+    
+    def get_initial(self) -> dict[str, Any]:
+        initial_data =  super().get_initial()
+        initial_data = {
+            'first_name':self.request.user.first_name,
+            'last_name':self.request.user.last_name,
+        }
+        return initial_data
+    
+    def get_success_url(self):
+        return reverse('account:ProfileView',args=(self.object.user.pk,))
+    
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        self.request.user.first_name = form.cleaned_data['first_name']
+        self.request.user.last_name = form.cleaned_data['last_name']
+        self.request.user.save()
+        messages.success(self.request, "Profile details updated.")
+        return super().form_valid(form)
 
 class FollowInProfile(View):
     def get(self,request,pk):

@@ -13,8 +13,16 @@
   .intro{
     padding:10px 0;
   }
+  #second{
+    display:none;
+  }
 </style>
 
+{% if messages %}
+    {% for message in messages %}
+    <div class="border border-success p-2 rounded text-success">{{message}}</div>
+    {% endfor %}
+{% endif %}
 <div class="container">
   <div class="row">
     <div class="col-md-4 text-center"> 
@@ -36,6 +44,9 @@
         <p>{{profile_model.bio}}</p>
         <a href="mailto:recipient@example.com">{{profile_model.user.email}}</a><br><br>
 
+        {% if profile_model.user == request.user %}
+        <a class="btn btn-sm btn-primary" id="magic" href="{% url 'account:UpdateProfile' profile_model.id %}">Update Profile</a>
+        {% endif %}
 
         {% if not profile_model.user == request.user %}
           {% if follower %}

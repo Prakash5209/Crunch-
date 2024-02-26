@@ -1,11 +1,9 @@
-from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404,render,redirect
 from django.urls import reverse_lazy,reverse
 from django.contrib.auth import get_user_model
 from django.views.generic import FormView,TemplateView
 from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView,DeleteView,CreateView
+from django.views.generic.edit import UpdateView,DeleteView
 from django.contrib import messages
 from django.conf import settings
 from django.http import HttpResponse,JsonResponse
@@ -14,7 +12,6 @@ import re
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from account.models import User
 from blog.models import CreateBlogModel,BlogCommentModel,LikeModel
 from account.models import User,Follow
 from blog.forms import CreateBlogForm,CommentForm
@@ -124,7 +121,7 @@ def BlogDetail(request,pk):
         'like':LikeModel.objects.filter(blog = blog_model,user = request.user).exists(),
         }
     return render(request,'read_blog.html',context)
-
+    
 
 # better_like 
 @login_required
@@ -137,23 +134,6 @@ def like_post(request,pk):
             print('unlike successfully')
     return JsonResponse({'status':created,'total':len(LikeModel.objects.all())},safe=False)
 
-# like branch
-# @login_required
-# def like_post(request,pk):
-#     post = get_object_or_404(CreateBlogModel,id = pk)
-#     like,not_created = LikeModel.objects.get_or_create(post = post,user = request.user)
-#     if not_created:
-#         if like.is_liked:
-#             like.is_liked = True
-#         else:
-#             like.is_liked = False
-#         like.save()
-#         # return redirect(reverse('blog:blog_detail',kwargs={'pk':pk}))
-#     total_likes = LikeModel.objects.filter(is_liked = True,post = post).count()
-#     # context={'like':total_likes}
-#     print(total_likes)
-#     return JsonResponse({'like':total_likes,'is_like':like.is_liked},safe=False)
-#     # return render(request,'read_blog.html',context)    
 
 
 @method_decorator(login_required,name='dispatch')
