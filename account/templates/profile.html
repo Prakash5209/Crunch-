@@ -19,7 +19,11 @@
   <div class="row">
     <div class="col-md-4 text-center"> 
       <div class="intro">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg" alt="user_image" width="300" class="rounded-circle">
+        {% if profile_model.avatar %}
+          <img src="{{profile_model.avatar.url}}" alt="profile image" width="300" class="rounded-circle">
+        {% else %}
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg" alt="user_image" width="300" class="rounded-circle">
+        {% endif %}
       </div>
     </div>
     <div class="col-md-8">
@@ -37,7 +41,7 @@
           {% if follower %}
           <a href="{% url 'account:followInProfile' profile_model.user.id %}" class="btn btn-sm btn-primary">UnFollow</a>
           {% else %}
-          <a href="{% url 'account:followInProfile' profile_model.user.id %}" class="btn btn-sm btn-primary">Follow{{profile_model.user.id}}</a>
+          <a href="{% url 'account:followInProfile' profile_model.user.id %}" class="btn btn-sm btn-primary">Follow</a>
           {% endif %}
         {% endif %}
 
