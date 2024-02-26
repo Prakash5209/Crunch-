@@ -35,9 +35,9 @@
 
         {% if not profile_model.user == request.user %}
           {% if follower %}
-          <a href="" class="btn btn-sm btn-primary">UnFollow</a>
+          <a href="{% url 'account:followInProfile' profile_model.user.id %}" class="btn btn-sm btn-primary">UnFollow</a>
           {% else %}
-          <a href="" class="btn btn-sm btn-primary">Follow</a>
+          <a href="{% url 'account:followInProfile' profile_model.user.id %}" class="btn btn-sm btn-primary">Follow{{profile_model.user.id}}</a>
           {% endif %}
         {% endif %}
 
