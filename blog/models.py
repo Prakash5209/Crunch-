@@ -1,6 +1,7 @@
 from django.db import models
 from tinymce import models as tinymce_models
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 class Status(models.TextChoices):
     DRAFT = 'draft','DRAFT',
@@ -37,15 +38,7 @@ class BlogCommentModel(TimeStampModel):
     
     def __str__(self):
         return f'{self.user}{self.comment}'
-
-# class LikeModel(models.Model):
-#     is_liked = models.BooleanField(default=False)
-#     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,blank=True,null=True)
-#     post = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE,related_name = 'likes')
-
-#     def __str__(self):
-#         return str(self.id)
-
+    
 
 class LikeModel(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
@@ -53,3 +46,12 @@ class LikeModel(models.Model):
     
     def __str__(self):
         return str(self.id)
+    
+
+class Rating(models.Model):
+    rate = models.IntegerField()
+    blog = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(),on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.id}"

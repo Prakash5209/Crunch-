@@ -18,6 +18,9 @@
   .unchecked{
     color:gray;
   }
+  .rating{
+    cursor:pointer;
+  }
 </style>  
 
 
@@ -44,7 +47,22 @@
       {{blog_model.content | safe}}
 
       <div>
-        <a id="dataContainer" href="{% url 'blog:like_post' blog_model.id %}"><i id="like_icon" class="{% if like %}fa fa-solid fa-heart fa-xl checked{% else %}fa fa-regular fa-heart fa-xl unchecked{% endif %}"></i></a>&nbsp;<span id="likes" style="font-size: 1.2rem;">{{total_likes}}</span>
+
+        <div class="d-flex flex-nowrap justify-content-around bd-highlight">
+          <div>
+            <a id="dataContainer" href="{% url 'blog:like_post' blog_model.id %}"><i id="like_icon" class="{% if like %}fa fa-solid fa-heart fa-xl checked{% else %}fa fa-regular fa-heart fa-xl unchecked{% endif %}"></i></a>&nbsp;<span id="likes" style="font-size: 1.2rem;">{{total_likes}}</span>
+          </div>
+          <div class="rating">
+            <i class="fa-regular fa-star fa-xl" value="1" style="color: #FFD43B;"></i>
+            <i class="fa-regular fa-star fa-xl" value="2" style="color: #FFD43B;"></i>
+            <i class="fa-regular fa-star fa-xl" value="3" style="color: #FFD43B;"></i>
+            <i class="fa-regular fa-star fa-xl" value="4" style="color: #FFD43B;"></i>
+            <i class="fa-regular fa-star fa-xl" value="5" style="color: #FFD43B;"></i>
+          </div>
+        </div>
+
+
+
       </div>
     </div>
 
@@ -84,7 +102,7 @@
                   </span>
                 </li>
 
-                  <!-- Modal child-comment deletion -->
+                  <!-- Modal parent-comment deletion -->
                   <div class="modal fade" id="parentCommentId" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
@@ -194,8 +212,6 @@
 
 <script>
 
-
-
   document.addEventListener("DOMContentLoaded", function() {
     const replyLinks = document.querySelectorAll('.reply-field');
     replyLinks.forEach(function(link) {
@@ -252,6 +268,27 @@
     })
   })
 
+
+  document.addEventListener("DOMContentLoaded",()=>{
+    const star = document.querySelectorAll(".fa-star");
+
+    for(let i = 0;i < star.length;i++){
+      star[i].addEventListener("mouseenter",()=>{
+        const value_num = star[i].getAttribute('value');
+        for(let j = 0;j < value_num;j++){
+          star[j].setAttribute('class','fa-solid fa-star fa-xl')
+        }
+      })
+      star[i].addEventListener("mouseleave",()=>{
+        const value_num = star[i].getAttribute('value');
+        for(let j = 0;j < value_num;j++){
+          star[j].setAttribute('class','fa-regular fa-star fa-xl');
+          star[j].setAttribute('style','color:#FFD43B');
+        }
+      })
+    }
+  })
 </script>
 
 {% endblock %}
+
