@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from tinymce.widgets import TinyMCE
 
-from blog.models import CreateBlogModel,BlogCommentModel,LikeModel
+from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating
 from account.models import Profile
 
 
@@ -16,3 +16,4 @@ class YourModelAdmin(admin.ModelAdmin):
 
 admin.site.register(CreateBlogModel,YourModelAdmin)
 admin.site.register(LikeModel)
+admin.site.register(Rating)

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from blog.views import Home,CreateBlog,BlogDetail,UpdateBlog,Aboutpage,Contactpage,DeleteBlog,search_feature,like_post,DeleteComment
+from blog.views import Home,CreateBlog,BlogDetail,UpdateBlog,Aboutpage,Contactpage,DeleteBlog,search_feature,like_post,DeleteComment,rateBlog
 
 app_name = "blog"
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
     path('delete-blog/<int:pk>/',DeleteBlog.as_view(),name="delete_blog"),
     path('about-us/',Aboutpage.as_view(),name='Aboutpage'),
     path('contact-us/',Contactpage.as_view(),name='Contactpage'),
+    path('rateBlog/<int:pk>/',rateBlog,name="rateBlog"),
 
     path('delete-comment/<int:pk>/',DeleteComment,name="DeleteComment"),
 ]

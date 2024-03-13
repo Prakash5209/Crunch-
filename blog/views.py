@@ -11,12 +11,13 @@ from django.db.models import Q
 import re
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from decouple import config
 
-from blog.models import CreateBlogModel,BlogCommentModel,LikeModel
+
+from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating
 from account.models import User,Follow
 from blog.forms import CreateBlogForm,CommentForm
 
-from decouple import config
 
 
 class Home(ListView):
@@ -171,6 +172,13 @@ def DeleteComment(request, pk):
     # return JsonResponse({'status':'we good'},safe=False)
     # return redirect(reverse('blog:blog_detail',pk))
     return redirect(reverse('blog:blog_detail', kwargs={'pk': comment_model.blog_id.id}))
+
+
+def rateBlog(request,pk):
+    print('rate me')
+    # rate = Rating(rate = request.,blog = pk,user = request.User).save()
+    return JsonResponse({'status':'okay'},safe=False)
+
 
 class Aboutpage(TemplateView):
     template_name = 'aboutus.html'
