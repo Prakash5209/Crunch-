@@ -164,13 +164,10 @@ class DeleteBlog(DeleteView):
     success_url = reverse_lazy('blog:home')
     template_name = 'read_blog.html'
 
-@method_decorator(login_required,name='dispatch')
+@login_required
 def DeleteComment(request, pk):
     comment_model = get_object_or_404(BlogCommentModel,id = pk,user = request.user)
     comment_model.delete()
-    # print(request.path)
-    # return JsonResponse({'status':'we good'},safe=False)
-    # return redirect(reverse('blog:blog_detail',pk))
     return redirect(reverse('blog:blog_detail', kwargs={'pk': comment_model.blog_id.id}))
 
 
