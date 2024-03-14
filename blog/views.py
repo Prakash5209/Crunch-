@@ -8,11 +8,11 @@ from django.contrib import messages
 from django.conf import settings
 from django.http import HttpResponse,JsonResponse
 from django.db.models import Q
-import re
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from decouple import config
-
+from django.db.models import Q
+import re,json
 
 from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating
 from account.models import User,Follow
@@ -71,7 +71,6 @@ class CreateBlog(FormView):
     
 def BlogDetail(request,pk):
     blog_model = get_object_or_404(CreateBlogModel,status = 'public',id = pk)
-
     blog_comment_form = CommentForm(request.POST or None, request.FILES or None)
     profan = config('profanity')
     profan_list = profan.split('-')
@@ -112,14 +111,19 @@ def BlogDetail(request,pk):
             BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None        
         # print('saved')
 
-    blog_comment_model = BlogCommentModel.objects.filter(blog_id = pk)
+    try:
+        total_rate=round(sum([i.rate for i in Rating.objects.filter(blog=blog_model)])/len(Rating.objects.filter(blog=blog_model)))
+    except:
+        total_rate = 0
 
     context = {
         'blog_model':blog_model,
         'blog_comment_form':blog_comment_form,
-        'blog_comments':blog_comment_model,
+        'blog_comments':BlogCommentModel.objects.filter(blog_id = pk),
         'total_likes':len(LikeModel.objects.all()),
-        'like':LikeModel.objects.filter(blog = blog_model,user = request.user).exists(),
+        'total_rate':total_rate,
+        'total_rate_user':len(Rating.objects.filter(blog__id=blog_model.id)),
+        'like':LikeModel.objects.filter(blog=blog_model,user=request.user).exists(),
         }
     return render(request,'read_blog.html',context)
     
@@ -132,7 +136,8 @@ def like_post(request,pk):
     if not created:
         if like:
             like.delete()
-            print('unlike successfully')
+        else:
+            return redirect(reverse('blog:blog_detail',args=(blog.id,)))
     return JsonResponse({'status':created,'total':len(LikeModel.objects.all())},safe=False)
 
 
@@ -172,8 +177,19 @@ def DeleteComment(request, pk):
 
 
 def rateBlog(request,pk):
-    print('rate me')
-    # rate = Rating(rate = request.,blog = pk,user = request.User).save()
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        rate_value = data.get('rating_value')
+        print('rate')
+        var = Rating.objects.filter(Q(blog__id=pk) & Q(user=request.user)).exists()
+        if not var:
+            Rating(rate=rate_value,blog=CreateBlogModel.objects.get(id=pk),user=request.user).save()
+            print("new object saved")
+        else:
+            rate_instance = Rating.objects.get(blog=CreateBlogModel.objects.get(id = pk),user=request.user)
+            rate_instance.rate = rate_value
+            rate_instance.save()
+            print('updated')
     return JsonResponse({'status':'okay'},safe=False)
 
 
