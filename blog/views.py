@@ -131,10 +131,10 @@ def BlogDetail(request,pk):
         'blog_model_tags':blog_model_tags,
         'blog_comment_form':blog_comment_form,
         'blog_comments':BlogCommentModel.objects.filter(blog_id = pk),
-        'total_likes':len(LikeModel.objects.all()),
+        'total_likes':len(LikeModel.objects.filter(blog = blog_model)),
         'total_rate':total_rate,
         'total_rate_user':len(Rating.objects.filter(blog__id=blog_model.id)),
-        'like':LikeModel.objects.filter(blog=blog_model,user=request.user).exists(),
+        'like':LikeModel.objects.filter(blog=blog_model,user=request.user).exists() if request.user.is_authenticated else None,
         }
     return render(request,'read_blog.html',context)
     
@@ -149,7 +149,7 @@ def like_post(request,pk):
             like.delete()
         else:
             return redirect(reverse('blog:blog_detail',args=(blog.id,)))
-    return JsonResponse({'status':created,'total':len(LikeModel.objects.all())},safe=False)
+    return JsonResponse({'status':created,'total':len(LikeModel.objects.filter(blog = blog))},safe=False)
 
 
 
