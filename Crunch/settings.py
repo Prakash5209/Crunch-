@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'tinymce',
+    'taggit',
 
     'account',
     'blog',
@@ -183,3 +184,8 @@ TINYMCE_DEFAULT_CONFIG = {
 
 TINYMCE_SPELLCHECKER = True
 TINYMCE_COMPRESSOR = False
+
+
+# django-taggit settings
+
+TAGGIT_CASE_INSENSITIVE = True

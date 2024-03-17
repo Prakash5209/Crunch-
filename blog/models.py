@@ -2,6 +2,7 @@ from django.db import models
 from tinymce import models as tinymce_models
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from taggit.managers import TaggableManager
 
 class Status(models.TextChoices):
     DRAFT = 'draft','DRAFT',
@@ -21,8 +22,7 @@ class CreateBlogModel(TimeStampModel):
     title = models.CharField(max_length=255)
     content = tinymce_models.HTMLField()
     status = models.CharField(max_length=255,choices=Status.choices,default=Status.DRAFT)
-
-
+    tags = TaggableManager()
     
     def __str__(self):
         return f'title:{self.title}, by:{self.user}'
