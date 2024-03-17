@@ -12,6 +12,7 @@ class CreateBlogForm(forms.ModelForm):
             'content':TinyMCE(),
             'title':forms.TextInput(attrs={'class':'form-control','placeholder':'title'}),
             'status':forms.Select(attrs={'class':'form-control'}),
+            # 'tags':forms.TextInput(attrs={'class':'form-control','placeholder':'tags'})
         }
 
 

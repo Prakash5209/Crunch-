@@ -71,6 +71,11 @@
             <input class="form-control" type="search" placeholder="search..." name="search" aria-label="Search" style="width:  100%;">
         </form>
       </div> -->
+      <div>
+        {% for tag in tags_list %}
+          <button type="button" class="btn btn-secondary btn-sm">{{tag}}</button>
+        {% endfor %}
+      </div>
     
     
       
@@ -92,6 +97,27 @@
             </div>
           {% endfor %}
         {% endif %}
+
+        
+        {% comment %} {% if tag_search %}
+            {% for i in tag_search %}
+              <div id="content_{{i.id}}" class="card mt-3">
+                <div class="card-header">
+                  <div>
+                    <a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
+                  </div>
+                </div>
+                <div class="card-body py-0 px-2">
+                  <blockquote class="blockquote mb-0">
+                    <p><small>{{i.content|striptags|slice:":200"|lower|safe}}...</small></p>
+                    <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
+                  </blockquote>
+                </div>
+              </div>
+            {% endfor %}
+        {% endif %} {% endcomment %}
+
+        
       {% endif %}
             
 

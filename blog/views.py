@@ -1,39 +1,47 @@
 from django.shortcuts import get_object_or_404,render,redirect
 from django.urls import reverse_lazy,reverse
-from django.contrib.auth import get_user_model
 from django.views.generic import FormView,TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView,DeleteView
 from django.contrib import messages
-from django.conf import settings
 from django.http import HttpResponse,JsonResponse
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from decouple import config
-from django.db.models import Q
+import random
 import re,json
 
 from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating
-from account.models import User,Follow
 from blog.forms import CreateBlogForm,CommentForm
 
-
+from taggit.models import Tag
 
 class Home(ListView):
     template_name = 'home.html'
     model = CreateBlogModel
 
+
     def get_queryset(self):
-        return CreateBlogModel.objects.filter(status = 'public')
-    
+        queryset = super().get_queryset()
+        queryset = queryset.filter(status = 'public')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = 9 if len(CreateBlogModel.tags.all()) > 5 else len(CreateBlogModel.tags.all()))
+        return context
 
 def search_feature(request):
     if request.method == 'POST':
         search_query = request.POST.get('search')
-        print(search_query)
-        blog_model = CreateBlogModel.objects.filter(Q(title__icontains=search_query))
-        context = {'query':search_query,'searched':blog_model}
+        blog_model = CreateBlogModel.objects.filter(Q(title__icontains=search_query) | Q(tags__name__icontains=search_query)).distinct()
+        print(blog_model)
+        context = {
+            'query':search_query,
+            'searched':blog_model
+            # 'tag_search':CreateBlogModel.objects.filter(tags = Tag.objects.get(name = search_query)),
+        }
         return render(request,'home.html',context)
 
 @method_decorator(login_required,name='dispatch')
@@ -71,6 +79,7 @@ class CreateBlog(FormView):
     
 def BlogDetail(request,pk):
     blog_model = get_object_or_404(CreateBlogModel,status = 'public',id = pk)
+    blog_model_tags = blog_model.tags.all()
     blog_comment_form = CommentForm(request.POST or None, request.FILES or None)
     profan = config('profanity')
     profan_list = profan.split('-')
@@ -118,6 +127,7 @@ def BlogDetail(request,pk):
 
     context = {
         'blog_model':blog_model,
+        'blog_model_tags':blog_model_tags,
         'blog_comment_form':blog_comment_form,
         'blog_comments':BlogCommentModel.objects.filter(blog_id = pk),
         'total_likes':len(LikeModel.objects.all()),
@@ -145,7 +155,6 @@ def like_post(request,pk):
 @method_decorator(login_required,name='dispatch')
 class UpdateBlog(UpdateView):
     model = CreateBlogModel
-    # fields = ['title','content']
     template_name = 'create_blog.html'
     form_class = CreateBlogForm
 

@@ -48,7 +48,13 @@
       <p>{{blog_model.created_at}}</p>
       <h1>{{blog_model.title }}</h1>
       {{blog_model.content | safe}}
-
+      <hr>
+      <div>
+        {% for i in blog_model_tags %}
+          <span><a href="#">#{{i}}</a></span>
+        {% endfor %}
+      </div>
+      <br>
       <div>
         <div class="d-flex flex-nowrap justify-content-around bd-highlight">
           <div>
