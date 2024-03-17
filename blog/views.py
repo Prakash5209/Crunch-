@@ -29,20 +29,21 @@ class Home(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = 9 if len(CreateBlogModel.tags.all()) > 5 else len(CreateBlogModel.tags.all()))
+        context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = len(CreateBlogModel.tags.all()))
         return context
 
 def search_feature(request):
     if request.method == 'POST':
         search_query = request.POST.get('search')
         blog_model = CreateBlogModel.objects.filter(Q(title__icontains=search_query) | Q(tags__name__icontains=search_query)).distinct()
-        print(blog_model)
         context = {
             'query':search_query,
             'searched':blog_model
             # 'tag_search':CreateBlogModel.objects.filter(tags = Tag.objects.get(name = search_query)),
         }
         return render(request,'home.html',context)
+    return render(request,'home.html')
+
 
 @method_decorator(login_required,name='dispatch')
 class CreateBlog(FormView):
