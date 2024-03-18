@@ -14,6 +14,7 @@ import re,json
 
 from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating
 from blog.forms import CreateBlogForm,CommentForm
+from account.models import User
 
 from taggit.models import Tag
 
@@ -21,6 +22,8 @@ class Home(ListView):
     template_name = 'home.html'
     model = CreateBlogModel
 
+    for i in CreateBlogModel.objects.all():
+        print(i.user.first_name)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -212,5 +215,3 @@ class Aboutpage(TemplateView):
 
 class Contactpage(TemplateView):
     template_name = 'contactus.html'
-
-

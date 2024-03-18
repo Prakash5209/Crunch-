@@ -95,27 +95,6 @@
             </div>
           {% endfor %}
         {% endif %}
-
-        
-        {% comment %} {% if tag_search %}
-            {% for i in tag_search %}
-              <div id="content_{{i.id}}" class="card mt-3">
-                <div class="card-header">
-                  <div>
-                    <a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
-                  </div>
-                </div>
-                <div class="card-body py-0 px-2">
-                  <blockquote class="blockquote mb-0">
-                    <p><small>{{i.content|striptags|slice:":200"|lower|safe}}...</small></p>
-                    <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
-                  </blockquote>
-                </div>
-              </div>
-            {% endfor %}
-        {% endif %} {% endcomment %}
-
-        
       {% endif %}
             
 
@@ -132,7 +111,7 @@
                   <div class="col">
                       <blockquote class="blockquote mb-0">
                           <p><small>{{object.content|striptags|slice:":200"|lower|safe}}...</small></p>
-                          <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
+                          <footer class="blockquote-footer">{{object.user.first_name}}&nbsp;&nbsp;<cite title="Source title">{{object.created_at}}</cite></footer>
                       </blockquote>
                   </div>
                   <div class="col-auto">

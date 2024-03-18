@@ -44,6 +44,7 @@
       {% if blog_model.image %}
         <img src=" {{blog_model.image.url}}" alt="superman" width="100%">
       {% endif %}
+      <br><br>
       <strong>{{blog_model.user.first_name}}</strong>
       <p>{{blog_model.created_at}}</p>
       <h1>{{blog_model.title }}</h1>

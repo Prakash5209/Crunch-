@@ -4,6 +4,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from taggit.managers import TaggableManager
 
+from account.models import User
+
 class Status(models.TextChoices):
     DRAFT = 'draft','DRAFT',
     PUBLIC = 'public','PUBLIC',
@@ -18,7 +20,7 @@ class TimeStampModel(models.Model):
 
 class CreateBlogModel(TimeStampModel):
     image = models.ImageField(upload_to='post',blank=True,null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete = models.CASCADE)
+    user = models.ForeignKey(User,on_delete = models.CASCADE,related_name='user_username')
     title = models.CharField(max_length=255)
     content = tinymce_models.HTMLField()
     status = models.CharField(max_length=255,choices=Status.choices,default=Status.DRAFT)
