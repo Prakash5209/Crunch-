@@ -118,3 +118,12 @@ def userSignup(request):
 def userLogout(request):
     logout(request)
     return redirect('blog:home')
+
+
+class Library(View):
+    def get(self,request):
+        blog_public = CreateBlogModel.objects.filter(user = request.user)
+        context = {
+            'blog_public':blog_public,
+        }
+        return render(request,'library.html',context)
