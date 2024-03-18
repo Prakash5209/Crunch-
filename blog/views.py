@@ -13,9 +13,8 @@ from django.http import Http404
 import random
 import re,json
 
-from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating
+from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User
 from blog.forms import CreateBlogForm,CommentForm
-from account.models import User
 
 from taggit.models import Tag
 
@@ -23,8 +22,8 @@ class Home(ListView):
     template_name = 'home.html'
     model = CreateBlogModel
 
-
     def get_queryset(self):
+        print(self.request.user)
         queryset = super().get_queryset()
         queryset = queryset.filter(status = 'public')
         return queryset
@@ -63,23 +62,40 @@ class CreateBlog(FormView):
         result = re.sub(pattern,'',content)
 
         title_check = set(title.split(' ')).intersection(set(profan_list))
-        print(title_check)
         # content_check = set(content.split(' ').intersection(set(profan_list)))
         if len(title_check) > 0 and len(result) > 0:
             return HttpResponse('invalid content')
         else:
-            if self.request.user.is_authenticated:
+            user_name = User.objects.get(email = self.request.user)
+            if user_name.first_name == '' and user_name.last_name == '':
+                return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles.id,)))
+            else:
                 obj = form.save(commit = False)
                 obj.user = self.request.user
                 obj.save()
                 tags = self.request.POST.get('tags').split(',')
                 obj.tags.add(*tags)
-                print(form)
-                print('content good')
+                if obj.save():
+                    return redirect(reverse('account:ProfileView',args=(self.request.user.profiles.id,)))
+                print('valid content')
                 return super().form_valid(form)
-            else:
-                return render(self.request,'home.html')
-        # obj.save()
+            return redirect('blog:home')
+            # return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles,)))
+        # else:
+        #     var = User.objects.get(email = self.request.user)
+        #     if var.first_name and var.last_name == '':
+        #         return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles,)))
+        #     else:
+        #         obj = form.save(commit = False)
+        #         obj.user = self.request.user
+        #         obj.save()
+        #         tags = self.request.POST.get('tags').split(',')
+        #         obj.tags.add(*tags)
+        #         if obj.save():
+        #             return redirect(reverse('account:ProfileView',args=(self.request.user.profiles,)))
+        #         print('content good')
+        #         return super().form_valid(form)
+        #     return render(self.request,'home.html')
     
     
 def BlogDetail(request,pk):

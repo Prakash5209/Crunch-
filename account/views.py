@@ -23,11 +23,16 @@ def userLogin(request):
         user = authenticate(request,email = email,password = password)
         if user:
             login(request,user)
+            var = User.objects.get(email = request.user)
+            if(var.first_name, var.last_name == ''):
+                return redirect(reverse('account:UpdateProfile',args=(request.user.profiles.id,)))
+                print('testing')
             return redirect('blog:home')
         else:
             messages.info(request, "incorrect input")
     return render(request,'login.html')
 
+# chaudhary123
 
 class ViewProfile(View):
 
