@@ -1,7 +1,7 @@
 from django.urls import path
 from account import views
 
-from .views import ViewProfile,FollowInProfile,UpdateProfile
+from .views import ViewProfile,FollowInProfile,UpdateProfile,Library
 
 app_name = "account"
 urlpatterns = [
@@ -11,4 +11,6 @@ urlpatterns = [
     path('follow-in-profile/<int:pk>/',FollowInProfile.as_view(),name="followInProfile"),
     path('signup/',views.userSignup,name="userSignup"),
     path('logout/',views.userLogout,name='userLogout'),
+
+    path('library/',Library.as_view(),name="Library"),
 ]

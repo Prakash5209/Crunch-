@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from decouple import config
+from django.http import Http404
 import random
 import re,json
 
@@ -22,8 +23,6 @@ class Home(ListView):
     template_name = 'home.html'
     model = CreateBlogModel
 
-    for i in CreateBlogModel.objects.all():
-        print(i.user.first_name)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -55,9 +54,6 @@ class CreateBlog(FormView):
     success_url = "/"
 
     def form_valid(self,form):
-        obj = form.save(commit = False)
-        obj.user = self.request.user
-
         profan = config('profanity')
         profan_list = profan.split('-')
         title = form.cleaned_data['title']
@@ -72,8 +68,13 @@ class CreateBlog(FormView):
         if len(title_check) > 0 and len(result) > 0:
             return HttpResponse('invalid content')
         else:
-            if obj.user == self.request.user:
+            if self.request.user.is_authenticated:
+                obj = form.save(commit = False)
+                obj.user = self.request.user
                 obj.save()
+                tags = self.request.POST.get('tags').split(',')
+                obj.tags.add(*tags)
+                print(form)
                 print('content good')
                 return super().form_valid(form)
             else:
@@ -129,6 +130,11 @@ def BlogDetail(request,pk):
     except:
         total_rate = 0
 
+    try:
+        avg_rate=len(Rating.objects.filter(blog__id=blog_model.id))
+    except:
+        avg_rate=0
+
     context = {
         'blog_model':blog_model,
         'blog_model_tags':blog_model_tags,
@@ -136,7 +142,7 @@ def BlogDetail(request,pk):
         'blog_comments':BlogCommentModel.objects.filter(blog_id = pk),
         'total_likes':len(LikeModel.objects.filter(blog = blog_model)),
         'total_rate':total_rate,
-        'avg_rate':round(total_rate/len(Rating.objects.filter(blog__id = pk))),
+        'avg_rate':avg_rate,
         'total_rate_user':len(Rating.objects.filter(blog__id=blog_model.id)),
         'like':LikeModel.objects.filter(blog=blog_model,user=request.user).exists() if request.user.is_authenticated else None,
         }
@@ -164,6 +170,7 @@ class UpdateBlog(UpdateView):
     form_class = CreateBlogForm
 
     def form_valid(self, form):
+        print(self.object)
         self.object = form.save()
         return super().form_valid(form)
     
@@ -176,6 +183,12 @@ class UpdateBlog(UpdateView):
             messages.success(self.request,"blog updated!")
             return reverse_lazy('blog:home')
         # return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
+    
+    def dispatch(self, request, *args, **kwargs):
+        blog = self.get_object()
+        if blog.user != self.request.user:
+            raise Http404("You do not have permission to access this page.")
+        return super().dispatch(request, *args, **kwargs)
 
 @method_decorator(login_required,name='dispatch')
 class DeleteBlog(DeleteView):

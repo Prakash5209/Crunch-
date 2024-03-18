@@ -62,6 +62,7 @@
           <a class="nav-link dropdown-toggle {% if request.path == '/account/profileview/2/' %}active{% endif %}" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{request.user.email}}</a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="{% url 'account:ProfileView' request.user.id %}">Profile</a>
+            <a class="dropdown-item" href="{% url 'account:Library' %}">Library</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{% url 'account:userLogout' %}">Logout</a>
           </div>
