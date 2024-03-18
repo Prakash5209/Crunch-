@@ -15,6 +15,7 @@ import re,json
 
 from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User
 from blog.forms import CreateBlogForm,CommentForm
+from account.models import Profile
 
 from taggit.models import Tag
 
@@ -23,7 +24,6 @@ class Home(ListView):
     model = CreateBlogModel
 
     def get_queryset(self):
-        print(self.request.user)
         queryset = super().get_queryset()
         queryset = queryset.filter(status = 'public')
         return queryset
@@ -80,22 +80,6 @@ class CreateBlog(FormView):
                 print('valid content')
                 return super().form_valid(form)
             return redirect('blog:home')
-            # return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles,)))
-        # else:
-        #     var = User.objects.get(email = self.request.user)
-        #     if var.first_name and var.last_name == '':
-        #         return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles,)))
-        #     else:
-        #         obj = form.save(commit = False)
-        #         obj.user = self.request.user
-        #         obj.save()
-        #         tags = self.request.POST.get('tags').split(',')
-        #         obj.tags.add(*tags)
-        #         if obj.save():
-        #             return redirect(reverse('account:ProfileView',args=(self.request.user.profiles,)))
-        #         print('content good')
-        #         return super().form_valid(form)
-        #     return render(self.request,'home.html')
     
     
 def BlogDetail(request,pk):
@@ -107,17 +91,13 @@ def BlogDetail(request,pk):
 
     if request.method == 'POST':
         if blog_comment_form.is_valid():
-
             raw_comment = blog_comment_form.cleaned_data['comment']
-
             pattern = re.compile('<.*?>')
             result = re.sub(pattern,'',raw_comment)
             title_check = set(raw_comment.split(' ')).intersection(set(profan_list))
-
             if len(title_check) > 0 and len(result) > 0:
                 return HttpResponse('invalid content')
             else:
-                    
                 obj = blog_comment_form.save(commit=False)
                 if request.user.is_authenticated:
                     obj.user = request.user 
@@ -126,7 +106,7 @@ def BlogDetail(request,pk):
                     return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
                 else:
                     return redirect('account:userLogin')
-            
+                
     if request.method == 'POST':
         comment_id = request.POST.get('parent_comment_id')
         comment = request.POST.get('reply')
@@ -139,17 +119,13 @@ def BlogDetail(request,pk):
             return HttpResponse('invalid content')
         else:
             BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None        
-        # print('saved')
 
     try:
         total_rate=sum([i.rate for i in Rating.objects.filter(blog__id = pk)])
-    except:
-        total_rate = 0
-
-    try:
         avg_rate=round(sum([i.rate for i in Rating.objects.filter(blog__id = blog_model.id)])/len(Rating.objects.filter(blog__id=blog_model.id)))
     except:
         avg_rate=0
+        total_rate = 0
 
     context = {
         'blog_model':blog_model,
@@ -161,6 +137,7 @@ def BlogDetail(request,pk):
         'avg_rate':avg_rate,
         'total_rate_user':len(Rating.objects.filter(blog__id=blog_model.id)),
         'like':LikeModel.objects.filter(blog=blog_model,user=request.user).exists() if request.user.is_authenticated else None,
+        'profile_info':Profile.objects.get(user=blog_model.user),
         }
     return render(request,'read_blog.html',context)
     

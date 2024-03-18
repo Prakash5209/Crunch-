@@ -3,7 +3,21 @@
 {% block content %}
 
 <style>
-
+  .circle-image {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+  
+  .circle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image fills container */
+  }
+  
   {% comment %} .replies {
       margin-left: 20px;
       display: none;
@@ -42,11 +56,24 @@
       {% endif %}
       <br>
       {% if blog_model.image %}
-        <img src=" {{blog_model.image.url}}" alt="superman" width="100%">
+        <img src="{{blog_model.image.url}}" alt="superman" width="100%">
       {% endif %}
       <br><br>
-      <strong><a href="{% url 'account:ProfileView' blog_model.user.id %}">{{blog_model.user.first_name}}</a></strong>
-      <p>{{blog_model.created_at}}</p>
+      
+      <div class="d-flex flex-wrap">
+        <div class="circle-image mr-2">
+          {% if profile_info.avatar %}
+            <img src="{{profile_info.avatar.url}}" alt="Image description">
+          {% else %}
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg" alt="Image description">
+          {% endif %}
+        </div>
+        <div class="align-self-center"> <a href="{% url 'account:ProfileView' blog_model.user.id %}">{{blog_model.user.first_name}} {{blog_model.user.last_name}}&nbsp;</a><i class="fa-solid fa-user-tie"></i>
+        </div>
+      </div>
+      <br>
+
+      <p><i class="fa-solid fa-calendar-day"></i>&nbsp;{{blog_model.created_at}}</p>
       <h1>{{blog_model.title }}</h1>
       {{blog_model.content | safe}}
       <hr>
