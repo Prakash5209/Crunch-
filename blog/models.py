@@ -48,8 +48,8 @@ class LikeModel(models.Model):
 
 class Rating(models.Model):
     rate = models.IntegerField()
-    blog = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE)
+    blog = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE,related_name='blog_rate')
     user = models.ForeignKey(get_user_model(),on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.blog}-{self.rate}"
