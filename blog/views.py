@@ -122,7 +122,7 @@ def BlogDetail(request,pk):
         # print('saved')
 
     try:
-        total_rate=round(sum([i.rate for i in Rating.objects.filter(blog=blog_model)])/len(Rating.objects.filter(blog=blog_model)))
+        total_rate=sum([i.rate for i in Rating.objects.filter(blog__id = pk)])
     except:
         total_rate = 0
 
@@ -133,6 +133,7 @@ def BlogDetail(request,pk):
         'blog_comments':BlogCommentModel.objects.filter(blog_id = pk),
         'total_likes':len(LikeModel.objects.filter(blog = blog_model)),
         'total_rate':total_rate,
+        'avg_rate':round(total_rate/len(Rating.objects.filter(blog__id = pk))),
         'total_rate_user':len(Rating.objects.filter(blog__id=blog_model.id)),
         'like':LikeModel.objects.filter(blog=blog_model,user=request.user).exists() if request.user.is_authenticated else None,
         }
@@ -190,7 +191,7 @@ def rateBlog(request,pk):
     if request.method == 'POST':
         data = json.loads(request.body)
         rate_value = data.get('rating_value')
-        print('rate')
+        print(rate_value)
         var = Rating.objects.filter(Q(blog__id=pk) & Q(user=request.user)).exists()
         if not var:
             Rating(rate=rate_value,blog=CreateBlogModel.objects.get(id=pk),user=request.user).save()
@@ -200,7 +201,9 @@ def rateBlog(request,pk):
             rate_instance.rate = rate_value
             rate_instance.save()
             print('updated')
-    return JsonResponse({'status':'okay'},safe=False)
+    # return JsonResponse({'rate_instance':round(sum([i.rate for i in CreateBlogModel.objects.get(id = pk).blog_rate.all()])/len(CreateBlogModel.objects.get(id = pk).blog_rate.all()))},safe=False)
+    return JsonResponse({'rate_instance':round(sum([i.rate for i in Rating.objects.filter(blog__id = pk)])/len(Rating.objects.filter(blog__id = pk)))
+,'total_rate_fetch':sum([i.rate for i in Rating.objects.filter(blog__id = pk)]),'total_rate_user_fetch':len(Rating.objects.filter(blog=CreateBlogModel.objects.get(id = pk)))},safe=False)
 
 
 class Aboutpage(TemplateView):

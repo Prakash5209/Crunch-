@@ -64,12 +64,12 @@
             {% csrf_token %}
             <div class="rating">
                 <div>
-                  <i class="fa-solid fa-star fa-xl" value="1" style="color: black;" title="click to give raing 1"></i>
-                  <i class="fa-solid fa-star fa-xl" value="2" style="color: black;" title="click to give raing 2"></i>
-                  <i class="fa-solid fa-star fa-xl" value="3" style="color: black;" title="click to give raing 3"></i>
-                  <i class="fa-solid fa-star fa-xl" value="4" style="color: black;" title="click to give raing 4"></i>
-                  <i class="fa-solid fa-star fa-xl" value="5" style="color: black;" title="click to give raing 5"></i>  
-                  {{total_rate}} rating by {{total_rate_user}} users
+                  <i class="fa-solid fa-star fa-xl" value="1" style="color: black;" title="click to give 1 raing"></i>
+                  <i class="fa-solid fa-star fa-xl" value="2" style="color: black;" title="click to give 2 raing"></i>
+                  <i class="fa-solid fa-star fa-xl" value="3" style="color: black;" title="click to give 3 raing"></i>
+                  <i class="fa-solid fa-star fa-xl" value="4" style="color: black;" title="click to give 4 raing"></i>
+                  <i class="fa-solid fa-star fa-xl" value="5" style="color: black;" title="click to give 5 raing"></i>  
+                  <span id="total_rate_value">{{total_rate}}</span> rating by <span id="total_rate_user_value">{{total_rate_user}}</span>
                 </div>
             </div>
           </form>
@@ -283,37 +283,14 @@
   document.addEventListener("DOMContentLoaded",()=>{
     const star = document.querySelectorAll(".fa-star");
 
-    //for(let i = 0;i < star.length;i++){
-    //  star[i].addEventListener("mouseenter",()=>{
-    //    const value_num = star[i].getAttribute('value');
-    //    for(let j = 0;j < value_num;j++){
-    //      star[j].setAttribute('class','fa-solid fa-star fa-xl')
-    //      star[j].setAttribute('style','color: #FFD43B')
-    //    }
-    //  })
-    //  star[i].addEventListener("mouseleave",()=>{
-    //    const value_num = star[i].getAttribute('value');
-    //    //const value_num = {{total_rate}}
-    //    for(let j = 0;j < value_num;j++){
-    //      if(star[j].getAttribute('value') > {{total_rate}}){
-    //        star[j].setAttribute('class','fa-solid fa-star fa-xl');
-    //        star[j].setAttribute('style','color:black');
-    //      }else{
-    //        star[j].setAttribute('class','fa-solid fa-star fa-xl');
-    //        star[j].setAttribute('style','color:#FFD43B');
-    //      }
-    //    }
-    //  })
-    //}
-
-    for(let i = 0;i < {{total_rate}};i++){
-      if(star[i].getAttribute('value') <= {{total_rate}}){
+    for(let i = 0;i < {{avg_rate}};i++){
+      if(star[i].getAttribute('value') <= {{avg_rate}}){
         star[i].setAttribute('class','fa-solid fa-star fa-xl');
         star[i].setAttribute('style','color:#FFD43B');
       }
     }
 
-    //sending data using fetch api
+    //sending rating data using fetch api 
     const starList = Array.from(document.querySelectorAll(".fa-star"));
     starList.forEach(item =>{
       item.addEventListener("click",()=>{
@@ -331,6 +308,8 @@
         .then(response => response.json())
         .then(data =>{
           console.log(data)
+          document.getElementById('total_rate_value').textContent = data.total_rate_fetch;
+          document.getElementById('total_rate_user_value').textContent = data.total_rate_user_fetch;
         })
       })
     })
