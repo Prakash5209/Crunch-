@@ -45,7 +45,7 @@
         <img src=" {{blog_model.image.url}}" alt="superman" width="100%">
       {% endif %}
       <br><br>
-      <strong>{{blog_model.user.first_name}}</strong>
+      <strong><a href="{% url 'account:ProfileView' blog_model.user.id %}">{{blog_model.user.first_name}}</a></strong>
       <p>{{blog_model.created_at}}</p>
       <h1>{{blog_model.title }}</h1>
       {{blog_model.content | safe}}
