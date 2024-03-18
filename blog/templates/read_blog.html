@@ -70,7 +70,7 @@
                   <i class="fa-solid fa-star fa-xl" value="3" style="color: black;" title="click to give 3 raing"></i>
                   <i class="fa-solid fa-star fa-xl" value="4" style="color: black;" title="click to give 4 raing"></i>
                   <i class="fa-solid fa-star fa-xl" value="5" style="color: black;" title="click to give 5 raing"></i>  
-                  <span id="total_rate_value">{{total_rate}}</span> rating by <span id="total_rate_user_value">{{total_rate_user}} users</span>
+                  <span id="total_rate_value">{{total_rate}}</span> rating by <span id="total_rate_user_value">{{total_rate_user}}</span>&nbsp;users
                 </div>
             </div>
           </form>
@@ -260,10 +260,6 @@
         }
       }
     });
-    
-    {% comment %} <input type="hidden" name="parent_comment_id" value="${parentDiv.dataset.parentId}">
-    <input name="reply" placeholder="Your reply" class="form-control"></input>
-    <button type="submit" class="btn btn-primary btn-sm btn-sm">Submit</button> {% endcomment %}
 
   document.getElementById('like_icon').addEventListener('click',(e)=>{
     e.preventDefault()

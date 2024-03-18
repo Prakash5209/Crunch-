@@ -147,7 +147,8 @@ def BlogDetail(request,pk):
         total_rate = 0
 
     try:
-        avg_rate=len(Rating.objects.filter(blog__id=blog_model.id))
+        avg_rate=round(sum([i.rate for i in Rating.objects.filter(blog__id = blog_model.id)])/len(Rating.objects.filter(blog__id=blog_model.id)))
+        print(avg_rate,'avg')
     except:
         avg_rate=0
 
