@@ -61,7 +61,10 @@
         <p>{{profile_model.address}}</p>
         <p><i class="fa-solid fa-cake-candles"></i>&nbsp;{{profile_model.dob}}&nbsp;&nbsp;<span>{{profile_model.gender}}</span></p>
 
-        <p><a href="">followers:{{follower|length}}</a>&nbsp;&nbsp;<a href="">following:{{following|length}}</a></p>
+        <p>
+          <a href="" data-toggle="modal" data-target="#exampleModalScrollable_follower">followers:{{follower|length}}</a>&nbsp;&nbsp;
+          <a href="" data-toggle="modal" data-target="#exampleModalScrollable_following">following:{{following|length}}</a>
+        </p>
         <p>{{profile_model.bio}}</p>
         <a href="mailto:recipient@example.com">{{profile_model.user.email}}</a><br><br>
 
@@ -70,12 +73,17 @@
         {% endif %}
 
         {% if not profile_model.user == request.user %}
+        <a href="{% if not request.user.is_authenticated %}{% url 'account:userLogin' %}{% else %}{% url 'account:followInProfile' profile_model.user.id %}{% endif %}" class="btn btn-sm btn-primary">{% if follower %}Unfollow{% else %}Follow{% endif %}</a>
+        {% endif %}
+
+
+        {% comment %} {% if not profile_model.user == request.user %}
           {% if follower %}
           <a href="{% url 'account:followInProfile' profile_model.user.id %}" class="btn btn-sm btn-primary">UnFollow</a>
           {% else %}
           <a href="{% url 'account:followInProfile' profile_model.user.id %}" class="btn btn-sm btn-primary">Follow</a>
           {% endif %}
-        {% endif %}
+        {% endif %} {% endcomment %}
 
 
       </div>
@@ -106,5 +114,51 @@
   </div>
 </div>
 
+
+<!-- follower Modal -->
+<div class="modal fade" id="exampleModalScrollable_follower" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% for i in follower %}
+          <p>{{i}}</p>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- following Modal -->
+<div class="modal fade" id="exampleModalScrollable_following" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% for i in following %}
+          <p>{{i}}</p>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
