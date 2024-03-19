@@ -49,13 +49,11 @@ class ViewProfile(View):
 
         following =[i.follow for i in Follow.objects.filter(youser = User.objects.get(id = pk))]
         follower =[i.youser for i in Follow.objects.all() if i.follow == User.objects.get(id = pk)]
-        print('following',following)
-        print('follower',follower)
 
         context = {
             'profile_model': profile_model,
             'form': form,
-            'CreateBlogModel':CreateBlogModel.objects.filter(user = self.request.user.id),
+            'CreateBlogModel':CreateBlogModel.objects.filter(user__id = pk,status = 'public'),
             'following':following,
             'follower':follower,
             }
