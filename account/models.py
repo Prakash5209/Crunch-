@@ -61,8 +61,8 @@ class Profile(models.Model):
 
 class Follow(models.Model):
     youser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name = 'account')
-    follow = models.ForeignKey(User,on_delete=models.CASCADE,related_name='user_id')
+    follow = models.ForeignKey(User,on_delete=models.CASCADE,related_name='user_info')
 
     def __str__(self):
-        return self.youser.email
+        return f"{self.youser.email} -> {self.follow.email}"
 

@@ -7,8 +7,6 @@ from django.views.generic import UpdateView
 from django.contrib import messages
 from django.views import View
 from django.urls import reverse,reverse_lazy
-from django.db.models import Q
-
 
 from account.models import User,Profile,Follow
 from blog.models import CreateBlogModel
@@ -38,40 +36,28 @@ class ViewProfile(View):
 
     def get(self, request, pk):
         profile_model = get_object_or_404(Profile, user_id=pk)
-        user = request.user
+        user = User.objects.get(id = pk)
         initial_data = {
             'first_name': user.first_name,
             'last_name': user.last_name,
         }
         form = ProfileForm(instance=profile_model,initial = initial_data)
 
-        following = Follow.objects.filter(youser = pk)
-        follower = Follow.objects.filter(follow = pk)
+
+        following =[i.follow for i in Follow.objects.filter(youser = User.objects.get(id = pk))]
+        follower =[i.youser for i in Follow.objects.all() if i.follow == User.objects.get(id = pk)]
+        print('following',following)
+        print('follower',follower)
 
         context = {
             'profile_model': profile_model,
             'form': form,
-            'CreateBlogModel':CreateBlogModel.objects.filter(user = self.request.user),
+            'CreateBlogModel':CreateBlogModel.objects.filter(user = self.request.user.id),
             'following':following,
             'follower':follower,
             }
         return render(request, 'profile.html', context)
 
-    # def post(self, request, pk):
-    #     user = get_object_or_404(User, id=pk)
-    #     profile_model = get_object_or_404(Profile, user_id=pk,user = request.user)
-    #     form = ProfileForm(request.POST,request.FILES or None, instance=profile_model)
-    #     if form.is_valid():
-    #         user = request.user
-    #         user.first_name = form.cleaned_data.get('first_name')
-    #         user.last_name = form.cleaned_data.get('last_name')
-    #         user.save()
-    #         form.save()
-    #         print('Profile updated successfully')
-    #         return redirect(reverse('account:ProfileView', kwargs={'pk': pk}))
-
-    #     context = {'profile_model': profile_model, 'form': form}
-    #     return render(request, 'profile.html', context)
 
 class UpdateProfile(UpdateView):
     model = Profile
@@ -99,15 +85,14 @@ class UpdateProfile(UpdateView):
 
 class FollowInProfile(View):
     def get(self,request,pk):
-        if Follow.objects.filter(youser=self.request.user,follow=int(pk)).exists():
-            Follow.objects.filter(youser=self.request.user,follow=int(pk)).delete()
-            print('success unfollowed')
-            return redirect(reverse('account:ProfileView',args=(pk,)))
-        else:
-            Follow(youser=self.request.user,follow=User.objects.get(id=int(pk))).save()
-            print('success follow')
-            return redirect(reverse('account:ProfileView',args=(pk,)))
-        return render(request,'profile.html')
+        get,create = Follow.objects.get_or_create(youser = self.request.user,follow = User.objects.get(id = pk))
+        if not create:
+            if get:
+                get.delete()
+            else:
+                return redirect(reverse('account:ProfileView',args=(pk,)))           
+
+        return redirect(reverse('account:ProfileView',args=(pk,)))           
 
 
 def userSignup(request):
