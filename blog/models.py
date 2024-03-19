@@ -42,7 +42,7 @@ class BlogCommentModel(TimeStampModel):
 
 class LikeModel(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-    blog = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE)
+    blog = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE,related_name="blog_like")
     
     def __str__(self):
         return str(self.id)
