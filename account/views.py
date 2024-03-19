@@ -12,7 +12,7 @@ from django.views.generic.edit import UpdateView,DeleteView
 from taggit.models import Tag
 
 from account.models import User,Profile,Follow
-from blog.models import CreateBlogModel
+from blog.models import CreateBlogModel,Rating,BlogCommentModel
 from account.forms import userSignupForm,ProfileForm
 
 activeUser = get_user_model()
@@ -50,12 +50,28 @@ class ViewProfile(View):
         following =[i.follow for i in Follow.objects.filter(youser = User.objects.get(id = pk))]
         follower =[i.youser for i in Follow.objects.all() if i.follow == User.objects.get(id = pk)]
 
+        total_likes = sum([len(i.blog_like.all()) for i in CreateBlogModel.objects.filter(user__id = pk)])
+        total_contents = CreateBlogModel.objects.filter(user__id = pk)
+        my_blog = CreateBlogModel.objects.filter(user__id = pk,status = 'public')
+        total_rating = 0
+        for i in my_blog:
+            total_rating = total_rating + sum([j.rate for j in Rating.objects.filter(blog = i)])
+
+        total_comments = 0
+        for i in my_blog:
+            total_comments = total_comments + len([j for j in BlogCommentModel.objects.filter(blog_id = i.id)])
+
+        print(total_comments)
         context = {
             'profile_model': profile_model,
             'form': form,
             'CreateBlogModel':CreateBlogModel.objects.filter(user__id = pk,status = 'public'),
             'following':following,
             'follower':follower,
+            'total_likes':total_likes,
+            'total_contents':total_contents,
+            'total_rating':total_rating,
+            'total_comments':total_comments,
             }
         return render(request, 'profile.html', context)
 

@@ -21,6 +21,16 @@
   }
   
 
+  table {
+    border-collapse: collapse; /* Remove default table borders */
+  }
+  th, td {
+    padding: 5px; /* Add padding for spacing */
+  }
+  .stat-label {
+    font-weight: bold; /* Style the labels */
+  }
+
 
   .profile-name{
     font-family: "Roboto", sans-serif;
@@ -42,9 +52,9 @@
 {% endif %}
 <div class="container">
   <div class="row">
-    <div class="col-md-4 text-center"> 
+    <div class="col-md-4 "> 
 
-      <div class="intro">
+      <div class="intro text-center">
         <div class="circle-image">
           {% if profile_model.avatar %}
             <img src="{{profile_model.avatar.url}}" alt="profile image" width="300" class="rounded-circle">
@@ -54,6 +64,26 @@
         </div>
       </div>
 
+      <div class="p-4">
+        <table>
+          <tr>
+            <th class="stat-label"><i class="fa-brands fa-readme fa-beat fa-xl"></i> &nbsp; Content</th>
+            <td class="stat-value">: {{total_contents|length}}</td>
+          </tr>
+          <tr>
+            <th class="stat-label"><i class="fa-solid fa-heart fa-beat fa-xl"></i> &nbsp; Likes</th>
+            <td class="stat-value">: {{total_likes}}</td>
+          </tr>
+          <tr>
+            <th class="stat-label"><i class="fa-solid fa-star fa-beat fa-xl"></i>&nbsp; Rating </th>
+            <td class="stat-value">: {{total_rating}}</td>
+          </tr>
+          <tr>
+            <th class="stat-label"><i class="fa-solid fa-comment fa-beat fa-xl"></i> &nbsp; Comments </th>
+            <td class="stat-value">: {{total_likes}}</td>
+          </tr>
+        </table>
+      </div>
     </div>
     <div class="col-md-8">
       <div class="intro">
@@ -77,14 +107,6 @@
         {% endif %}
 
 
-        {% comment %} {% if not profile_model.user == request.user %}
-          {% if follower %}
-          <a href="{% url 'account:followInProfile' profile_model.user.id %}" class="btn btn-sm btn-primary">UnFollow</a>
-          {% else %}
-          <a href="{% url 'account:followInProfile' profile_model.user.id %}" class="btn btn-sm btn-primary">Follow</a>
-          {% endif %}
-        {% endif %} {% endcomment %}
-
 
       </div>
       <hr>
@@ -92,7 +114,34 @@
         <h3>Top writting</h3>
         {% if CreateBlogModel %}
                 {% for blog in CreateBlogModel.all %}
-                    <div id="content_{{ blog.id }}" class="card mt-3">
+
+                  <div id="content_{{object.id}}" class="card mt-4">
+                    <div class="card-header">
+                        <div>
+                            <a href="{% url 'blog:blog_detail' blog.id %}">{{blog.title}}</a>
+                        </div>
+                    </div>
+                    <div class="card-body py-0 px-2">
+                        <div class="row">
+                            <div class="col">
+                                <blockquote class="blockquote mb-0">
+                                    <p><small>{{blog.content|striptags|slice:":200"|lower|safe}}...</small></p>
+                                    <footer class="blockquote-footer">{{blog.user.first_name}}&nbsp;&nbsp;<cite title="Source title">{{blog.created_at}}</cite></footer>
+                                </blockquote>
+                            </div>
+                            <div class="col-auto">
+                              {% if blog.image %}
+                                <img src="{{blog.image.url}}" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                              {% else %}
+                                <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                              {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+
+
+                    {% comment %} <div id="content_{{ blog.id }}" class="card mt-3">
                         <div class="card-header">
                             <div>
                                 <a href="{% url 'blog:blog_detail' blog.id %}">{{ blog.title }}</a>
@@ -104,7 +153,7 @@
                                 <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
                             </blockquote>
                         </div>
-                    </div>
+                    </div> {% endcomment %}
                 {% endfor %}
             {% else %}
                 <p>No blog available.</p>
@@ -116,11 +165,11 @@
 
 
 <!-- follower Modal -->
-<div class="modal fade" id="exampleModalScrollable_follower" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable" role="document">
+<div class="modal fade" id="exampleModalScrollable_follower" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalScrollableTitle">follower</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -132,7 +181,6 @@
             <div class="d-flex justify-content-between">
               <a href="{% url 'account:ProfileView' i.id %}" class="list-group-item list-group-item-action" tabindex="-1" aria-disabled="true">{{i}}</a>
             </div>
-
             {% endfor %}
           {% else %}
           <p>0 follower</p>
@@ -147,11 +195,11 @@
 </div>
 
 <!-- following Modal -->
-<div class="modal fade" id="exampleModalScrollable_following" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable" role="document">
+<div class="modal fade" id="exampleModalScrollable_following" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalScrollableTitle">following</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -160,10 +208,12 @@
         <div class="list-group">
           {% if following %}
             {% for i in following %}
-            <a href="{% url 'account:ProfileView' i.id %}" class="list-group-item list-group-item-action" tabindex="-1" aria-disabled="true">{{i}}</a>
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'account:ProfileView' i.id %}" class="list-group-item list-group-item-action" tabindex="-1" aria-disabled="true">{{i}}</a>
+            </div>
             {% endfor %}
           {% else %}
-          <p>0 following</p>
+          <p>0 follower</p>
           {% endif %}
         </div>
       </div>
