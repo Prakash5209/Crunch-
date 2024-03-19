@@ -1,4 +1,3 @@
-from typing import Any
 from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.shortcuts import render,redirect,get_object_or_404
@@ -7,6 +6,10 @@ from django.views.generic import UpdateView
 from django.contrib import messages
 from django.views import View
 from django.urls import reverse,reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.generic.edit import UpdateView,DeleteView
+from taggit.models import Tag
 
 from account.models import User,Profile,Follow
 from blog.models import CreateBlogModel
@@ -65,7 +68,7 @@ class UpdateProfile(UpdateView):
     template_name = 'update_profile.html'
     # success_url = reverse_lazy('account:ProfileView',kwargs={'pk':object.pk})
     
-    def get_initial(self) -> dict[str, Any]:
+    def get_initial(self):
         initial_data =  super().get_initial()
         initial_data = {
             'first_name':self.request.user.first_name,
@@ -117,3 +120,25 @@ class Library(View):
             'blog_public':blog_public,
         }
         return render(request,'library.html',context)
+
+
+
+def search_feature_library(request):
+    if request.method == 'POST':
+        search_query = request.POST.get('search')
+        blog_model = CreateBlogModel.objects.filter(user = request.user,title__icontains=search_query,tags__name__icontains=search_query)
+        print(blog_model)
+        context = {
+            'query':search_query,
+            'searched':blog_model,
+            # 'tag_search':CreateBlogModel.objects.filter(tags = Tag.objects.get(name = search_query)),
+        }
+        return render(request,'library.html',context)
+    return render(request,'library.html')
+
+
+@method_decorator(login_required,name='dispatch')
+class DeleteBlog_library(DeleteView):
+    model = CreateBlogModel
+    success_url = reverse_lazy('account:Library')
+    template_name = 'read_blog.html'

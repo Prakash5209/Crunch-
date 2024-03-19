@@ -67,32 +67,36 @@
           <button class="btn btn-secondary btn-sm" value="{{tag.name}}" name="search">{{tag.name}}</button>
         {% endfor %}
       </form>
-<!-- 
-      <div class="flex-container mt-3">
-        <form method="post" action="{% url 'blog:search_feature' %}">
-            {% csrf_token %}
-            <input class="form-control" type="search" placeholder="search..." name="search" aria-label="Search" style="width:  100%;">
-        </form>
-      </div> -->
     
     
       
       {% if query %}
         {% if searched %}
           {% for i in searched %}
-            <div id="content_{{i.id}}" class="card mt-3">
-              <div class="card-header">
+          <div id="content_{{i.id}}" class="card mt-4">
+            <div class="card-header">
                 <div>
-                  <a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
+                    <a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
                 </div>
-              </div>
-              <div class="card-body py-0 px-2">
-                <blockquote class="blockquote mb-0">
-                  <p><small>{{i.content|striptags|slice:":200"|lower|safe}}...</small></p>
-                  <footer class="blockquote-footer">Someone famous in <cite title="Source title">Source title</cite></footer>
-                </blockquote>
-              </div>
             </div>
+            <div class="card-body py-0 px-2">
+                <div class="row">
+                    <div class="col">
+                        <blockquote class="blockquote mb-0">
+                            <p><small>{{i.content|striptags|slice:":200"|lower|safe}}...</small></p>
+                            <footer class="blockquote-footer">{{i.user.first_name}}&nbsp;&nbsp;<cite title="Source title">{{i.created_at}}</cite></footer>
+                        </blockquote>
+                    </div>
+                    <div class="col-auto">
+                      {% if i.image %}
+                        <img src="{{i.image.url}}" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                      {% else %}
+                        <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                      {% endif %}
+                    </div>
+                </div>
+            </div>
+          </div>
           {% endfor %}
         {% endif %}
       {% endif %}
@@ -123,7 +127,7 @@
                   </div>
               </div>
           </div>
-      </div>
+        </div>
       
       {% endfor %}
 

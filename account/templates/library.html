@@ -1,34 +1,141 @@
 {% extends 'base.html' %}
 {% block content %}
     <div>
-        <h4>Library</h4>
-        {% for b in blog_public %}
-            <div>
-                <div id="content_{{b.id}}" class="card mt-4">
-                    <div class="card-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 border">
+                </div>
+                <div class="col-lg-9">
+                    <h4><a style="text-dark" href="{% url 'account:Library' %}">Library</a></h4>
+
+                    <form method="post" action="{% url 'account:search_feature_library' %}">
+                        {% csrf_token %}
+                        <div class="input-group mb-3 search-bar">
+                          <input type="text" class="form-control" placeholder="search..." aria-label="Recipient's username" name="search" aria-describedby="inputGroup-sizing-lg">
+                          <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+                          </div>
+                        </div>
+                    </form>
+
+                    {% if query %}
+                        {% if searched %}
+                        {% for i in searched %}
+                        <div id="content_{{ i.id }}" class="card mt-4">
+                            <div class="card-header d-flex justify-content-between">
+                              <div>
+                                <a href="{% url 'blog:blog_detail' i.id %}">{{ i.title }}</a>
+                              </div>
+                              <div class="dropdown">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton_{{ i.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right bg-white" aria-labelledby="dropdownMenuButton_{{ i.id }}">
+                                  <a class="dropdown-item" href="{% url 'blog:update_blog' i.id %}">Edit</a>
+                                  <a class="dropdown-item text-danger" data-toggle="modal" data-target="#exampleModal_delete" href="{% url 'blog:delete_blog' i.id %}">Delete</a>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card-body py-0 px-2">
+                              <div class="row">
+                                <div class="col">
+                                  <blockquote class="blockquote mb-0">
+                                    <p><small>{{ i.content|striptags|slice:":200"|lower|safe }}...</small></p>
+                                    <footer class="blockquote-footer">{{ i.user.first_name }}&nbsp;&nbsp;<cite title="Source title">{{ i.created_at }}</cite></footer>
+                                  </blockquote>
+                                </div>
+                                <div class="col-auto">
+                                  {% if i.image %}
+                                    <img src="{{ i.image.url }}" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                                  {% else %}
+                                    <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                                  {% endif %}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                        {% endfor %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% for b in blog_public %}
                         <div>
-                            <a href="{% if b.status == 'public' %}{% url 'blog:blog_detail' b.id %} {% else %} {% url 'blog:update_blog' b.id %} {% endif %}">{{b.title}}&nbsp;&nbsp;&nbsp; {% if b.status == 'draft' %}<span class="badge badge-warning">DRAFT</span>{% endif %}</a>
+                            <div id="content_{{ b.id }}" class="card mt-4">
+                                <div class="card-header d-flex justify-content-between">
+                                  <div>
+                                    <a href="{% if b.status == 'public' %}{% url 'blog:blog_detail' b.id %} {% else %} {% url 'blog:update_blog' b.id %} {% endif %}">{{ b.title }}</a>&nbsp;&nbsp;&nbsp;
+                                    {% if b.status == 'draft' %}<span class="badge badge-warning">DRAFT</span>{% endif %}
+                                  </div>
+                                  <div class="dropdown">
+                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton_{{ b.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right bg-white" aria-labelledby="dropdownMenuButton_{{ b.id }}">
+                                      <a class="dropdown-item" href="{% url 'blog:update_blog' b.id %}">Edit</a>
+                                      <a id="blog" class="dropdown-item text-danger" data-toggle="modal" data-target="#exampleModal_delete" data-blog-id={{b.id}}>Delete</a>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="card-body py-0 px-2">
+                                  <div class="row">
+                                    <div class="col">
+                                      <blockquote class="blockquote mb-0">
+                                        <p><small>{{ b.content|striptags|slice:":200"|lower|safe }}...</small></p>
+                                        <footer class="blockquote-footer">{{ b.user.first_name }}&nbsp;&nbsp;<cite title="Source title">{{ b.created_at }}</cite></footer>
+                                      </blockquote>
+                                    </div>
+                                    <div class="col-auto">
+                                      {% if b.image %}
+                                        <img src="{{ b.image.url }}" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                                      {% else %}
+                                        <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                                      {% endif %}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                         </div>
-                    </div>
-                    <div class="card-body py-0 px-2">
-                        <div class="row">
-                            <div class="col">
-                                <blockquote class="blockquote mb-0">
-                                    <p><small>{{b.content|striptags|slice:":200"|lower|safe}}...</small></p>
-                                    <footer class="blockquote-footer">{{b.user.first_name}}&nbsp;&nbsp;<cite title="Source title">{{b.created_at}}</cite></footer>
-                                </blockquote>
-                            </div>
-                            <div class="col-auto">
-                              {% if b.image %}
-                                <img src="{{b.image.url}}" width="100px" height="100px" alt="Image" class="img-fluid m-3">
-                              {% else %}
-                                <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" width="100px" height="100px" alt="Image" class="img-fluid m-3">
-                              {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
-        {% endfor %}
+        </div>
     </div>
+
+
+
+  <div class="modal fade" id="exampleModal_delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form id="delete_blog" method="post">
+            {% csrf_token %}
+            <!-- <button type="submit" data-blog-id="{{blog_model}}" class="btn btn-danger">delete</button> -->
+            <button type="submit" class="btn btn-danger">delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded",()=>{
+        var blog_id_selector = document.getElementById('blog');
+        var blog_id = document.getElementById('blog').dataset.blogId;
+        blog_id_selector.addEventListener("click",()=>{
+            console.log('/delete-blog/'+blog_id+'/');
+            delete_modal = document.getElementById('delete_blog').setAttribute('action','/delete-blog/'+blog_id+'/');
+        })
+    })
+  </script>
 {% endblock %}
