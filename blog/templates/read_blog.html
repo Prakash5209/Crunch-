@@ -17,7 +17,29 @@
     height: 100%;
     object-fit: cover; /* Ensures image fills container */
   }
+
+  .circle-image-comment {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border-radius: 50%;
+  }
   
+  .circle-image-comment img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image fills container */
+  }
+  #comment_user{
+    color:black;
+    text-transform:capitalize;
+  }
+  #author_name{
+    color:black;
+    text-transform:capitalize;
+  }
   {% comment %} .replies {
       margin-left: 20px;
       display: none;
@@ -50,31 +72,36 @@
 <!-- <div class="container"> -->
 <div class="row">
     <div class="col-md-8">
-      {% if request.user == blog_model.user %}
-      <a href="{% url 'blog:update_blog' blog_model.id %}" class="btn btn-primary btn-sm">Edit</a>
-      <a href="" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary btn-sm">Delete</a><br>
-      {% endif %}
-      <br>
-      {% if blog_model.image %}
-        <img src="{{blog_model.image.url}}" alt="superman" width="100%">
-      {% endif %}
-      <br><br>
-      
+      <h2><b>{{blog_model.title }}</b></h2>
       <div class="d-flex flex-wrap">
-        <div class="circle-image mr-2">
+        <div class="circle-image mr-3">
           {% if profile_info.avatar %}
             <img src="{{profile_info.avatar.url}}" alt="Image description">
           {% else %}
             <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg" alt="Image description">
           {% endif %}
         </div>
-        <div class="align-self-center"> <a href="{% url 'account:ProfileView' blog_model.user.id %}">{{blog_model.user.first_name}} {{blog_model.user.last_name}}&nbsp;</a><i class="fa-solid fa-user-tie"></i>
+        <div class="align-self-center">
+          <a id="author_name" href="{% url 'account:ProfileView' blog_model.user.id %}">{{blog_model.user.first_name}} {{blog_model.user.last_name}}&nbsp;</a><i class="fa-solid fa-pen-to-square"></i>
+          <p>
+            <i class="fa-solid fa-calendar-day"></i>&nbsp;<small>{{blog_model.created_at}}</small>
+            &nbsp;
+          </p>
+        </div>
+        &nbsp;
+        <div class="align-self-center">
+          {% if request.user == blog_model.user %}
+            <a href="{% url 'blog:update_blog' blog_model.id %}" class="btn btn-secondary btn-sm">Edit</a>
+            <a href="" data-toggle="modal" data-target="#exampleModal" class="btn btn-secondary btn-sm">Delete</a><br>
+            {% endif %}
         </div>
       </div>
-      <br>
+      {% if blog_model.image %}
+      <img src="{{blog_model.image.url}}" alt="superman" width="100%">
+      {% endif %}
+      <br><br>
 
-      <p><i class="fa-solid fa-calendar-day"></i>&nbsp;{{blog_model.created_at}}</p>
-      <h1>{{blog_model.title }}</h1>
+
       {{blog_model.content | safe}}
       <hr>
       <div>
@@ -127,18 +154,31 @@
         <ol style="padding:0;list-style:none;">
         {% for comment in blog_comments %}
           {% if not comment.parent_comment %}
-            <div data-parent-id="{{comment.id}}" class="border rounded p-1 m-1">
-                <li style="padding:5"><strong>
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg" class="rounded-circle" alt="img" width="30">
-                  {{comment.user}}<br></strong>{{comment.comment}}<input type="hidden" id="parent_id" name="parent_id_comment" value="{{comment.id}}">
-                  <span>
-                    {% if request.user.is_authenticated %}&nbsp;&nbsp;<a href="#" class="reply-field"><u>reply</u></a>&nbsp;
-                      {% if comment.user == request.user%}
-                      <a href="" id="delete_comment" data-target="#parentCommentId" data-toggle="modal"><u>delete</u>
-                      </a>
+            <div data-parent-id="{{comment.id}}" class="border rounded p-2 m-1">
+                <li style="padding:5">
+                  <div>
+                    <div class="d-flex flex-wrap">
+                      <div class="circle-image-comment mr-2">
+                        {% if profile_info.avatar %}
+                          <img src="{{profile_info.avatar.url}}" alt="Image description">
+                        {% else %}
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg" alt="Image description">
+                        {% endif %}
+                      </div>
+                      <div class="align-self-center">
+                        <a id="comment_user" href="{% url 'account:ProfileView' comment.user.id %}">{{comment.user.first_name}} {{comment.user.last_name}}</a><br>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-2">{{comment.comment}}</div>
+                  <input type="hidden" id="parent_id" name="parent_id_comment" value="{{comment.id}}">
+                    <span>
+                      {% if request.user.is_authenticated %}&nbsp;&nbsp;<a href="#" class="reply-field"><u>reply</u></a>&nbsp;
+                        {% if comment.user == request.user%}
+                        <a href="" id="delete_comment" data-target="#parentCommentId" data-toggle="modal"><u>delete</u></a>
+                        {% endif %}
                       {% endif %}
-                    {% endif %}
-                  </span>
+                    </span>
                 </li>
 
                   <!-- Modal parent-comment deletion -->
@@ -172,9 +212,21 @@
                     <li>
                       <ol style="list-style:none;">
                         <li class="m-1">
-                          <strong>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/542px-Unknown_person.jpg" class="rounded-circle" alt="img" width="30">
-                            {{j.user}}<br></strong>{{j.comment}}<input type="hidden" name="child_id" value="{{j.id}}"><span>{% if request.user.is_authenticated %}&nbsp;&nbsp;
+                          <div class="d-flex flex-wrap">
+                            <div class="circle-image-comment mr-2">
+                              {% if profile_info.avatar %}
+                                <img src="{{profile_info.avatar.url}}" alt="Image description">
+                              {% else %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg" alt="Image description">
+                              {% endif %}
+                            </div>
+                            <div class="align-self-center">
+                              <a id="comment_user" href="{% url 'account:ProfileView' j.user.id %}">{{j.user.first_name}} {{j.user.last_name}}<br></a>
+                            </div>
+                          </div>
+                          <div class="p-2">{{j.comment}}</div>
+                          <input type="hidden" name="child_id" value="{{j.id}}">
+                          <span>{% if request.user.is_authenticated %}&nbsp;&nbsp;
                             <a href="#" class="reply-field">reply</a>&nbsp;<a href="" id="delete_comment" data-toggle="modal" data-target="#deleteCommentModal" ><u>delete</u></a>{% endif %}
                           </span>
                         </li>
