@@ -5,7 +5,7 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView,DeleteView
 from django.contrib import messages
 from django.http import HttpResponse,JsonResponse
-from django.db.models import Q,Count
+from django.db.models import Q,Count,Avg
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from decouple import config
@@ -31,10 +31,15 @@ class Home(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = len(CreateBlogModel.tags.all()))
+
         blogs_with_likes = CreateBlogModel.objects.annotate(num_likes=Count('blog_like'))
         blogs_with_at_least_one_like = blogs_with_likes.filter(num_likes__gt=0)
         blogs_ordered_by_likes_desc = blogs_with_at_least_one_like.order_by('-num_likes')
-        context['most_likes'] = blogs_ordered_by_likes_desc
+        context['most_likes'] = blogs_ordered_by_likes_desc[:5]
+
+        top_rated = CreateBlogModel.objects.filter(status = "public").annotate(avg_rate = Avg('blog_rate__rate')).order_by('-avg_rate')[:5]
+        context['top_rated'] = top_rated
+
         return context
 
 def search_feature(request):
