@@ -41,12 +41,21 @@
   transition: 250ms;
 }
 .card:hover{
-  box-shadow:2px 2px 10px 5px rgb(203, 203, 203);
+  box-shadow:6px 6px 12px #969696,
+  -6px -6px 12px #ffffff;
 }
 .card-header a{
-  color: rgb(78, 78, 78);
+  color: rgb(78, 78);
   font-size:larger;
 }
+.carousel_div{
+  border:1px solid black;
+}
+
+.carousel-control-prev-icon,.carousel-control-next-icon {
+  filter: invert(100%);  
+}
+
 </style>
 
 
@@ -133,7 +142,41 @@
 
     </div>
     <div class="col-lg-4"> <!-- Use col-lg-* for large screens, col-md-* for medium screens, and col-* for small screens -->
-      <div class="list-group">
+      <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+          <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="carousel_div px-4">
+              <h3>Most liked</h3>
+              <ol>
+                {% for i in most_likes %}
+                <li><a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a></li>
+              {% endfor %}
+              </ol>
+            </div>
+            {% comment %} <img src="" class="d-block w-100" alt="..."> {% endcomment %}
+          </div>
+          <div class="carousel-item">
+            <div class="carousel_div pb-4">
+              <h3>Most rated</h3>
+            </div>
+            {% comment %} <img src="..." class="d-block w-100" alt="..."> {% endcomment %}
+          </div>
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+      {% comment %} <div class="list-group">
         <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
           <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">List group item heading</h5>
@@ -142,23 +185,7 @@
           <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
           <small>Donec id elit non mi porta.</small>
         </a>
-        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">List group item heading</h5>
-            <small class="text-muted">3 days ago</small>
-          </div>
-          <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-          <small class="text-muted">Donec id elit non mi porta.</small>
-        </a>
-        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">List group item heading</h5>
-            <small class="text-muted">3 days ago</small>
-          </div>
-          <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-          <small class="text-muted">Donec id elit non mi porta.</small>
-        </a>
-      </div>
+      </div> {% endcomment %}
     </div>
   </div>
 </div>
