@@ -3,6 +3,7 @@ from django.urls import reverse_lazy,reverse
 from django.views.generic import FormView,TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView,DeleteView
+from django.views import View
 from django.contrib import messages
 from django.http import HttpResponse,JsonResponse
 from django.db.models import Q,Count,Avg
@@ -13,7 +14,7 @@ from django.http import Http404
 import random
 import re,json
 
-from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User
+from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,LinkContainerModel
 from blog.forms import CreateBlogForm,CommentForm
 from account.models import Profile
 
@@ -223,6 +224,16 @@ def rateBlog(request,pk):
     return JsonResponse({'rate_instance':round(sum([i.rate for i in Rating.objects.filter(blog__id = pk)])/len(Rating.objects.filter(blog__id = pk)))
 ,'total_rate_fetch':sum([i.rate for i in Rating.objects.filter(blog__id = pk)]),'total_rate_user_fetch':len(Rating.objects.filter(blog=CreateBlogModel.objects.get(id = pk)))},safe=False)
 
+def LinkContainer(request,pk):
+    get,create = LinkContainerModel.objects.get_or_create(blog__id = pk,user = request.user)
+    if not create:
+        if get:
+            get.delete()
+            print('deleted')
+        else:
+            return redirect('blog:home')
+    return JsonResponse({'status':'okay'},safe=False)
+    
 
 class Aboutpage(TemplateView):
     template_name = 'aboutus.html'
