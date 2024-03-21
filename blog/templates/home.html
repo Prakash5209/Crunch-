@@ -25,6 +25,15 @@
   padding: 5px;
 }
 
+.blog_list{
+  color:black;
+  text-decoration:none;
+}
+.blog_list:hover{
+  color:black;
+  text-decoration:underline;
+}
+
 
 /* Responsive layout - makes a one column-layout instead of two-column layout */
 @media (max-width: 1000px) {
@@ -49,15 +58,51 @@
   font-size:larger;
 }
 .carousel_div{
-  border:1px solid black;
+  border:1px solid #D8D8D8;
+  border-radius:10px;
 }
 
-.carousel-control-prev-icon,.carousel-control-next-icon {
+{% comment %} .carousel-control-prev-icon,.carousel-control-next-icon {
   filter: invert(100%);  
+} {% endcomment %}
+.carousel-indicators li{
+  background-color:gray;
+}
+.carousel-indicators li.active,
+.carousel-indicators li:hover {
+  background-color: black;  /* Adjust color as desired (darker shade) */
+}
+.carousel ol{
+  padding-left:10px;
+  margin:0;
+}
+
+.carousel{
+  background-color:#f8f9fa;
+}
+
+.most_liked_links{
+  color:black;
+  text-decoration:none;
+}
+.most_liked_links:hover{
+  color:black;
+  text-decoration:underline;
+}
+.rectangle-image {
+  position: relative;
+  display: inline-block;
+  width: 150px; /* Adjust width as needed */
+  height: 100px; /* Adjust height as needed */  overflow: hidden;
+  border-radius: 5px; /* Adjust corner radius as desired */
+}
+.rectangle-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures image fills container */
 }
 
 </style>
-
 
 <div class="container">
   <div class="row">
@@ -85,7 +130,7 @@
           <div id="content_{{i.id}}" class="card mt-4">
             <div class="card-header">
                 <div>
-                    <a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
+                    <a class="blog_list" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
                 </div>
             </div>
             <div class="card-body py-0 px-2">
@@ -93,14 +138,18 @@
                     <div class="col">
                         <blockquote class="blockquote mb-0">
                             <p><small>{{i.content|striptags|slice:":200"|lower|safe}}...</small></p>
-                            <footer class="blockquote-footer">{{i.user.first_name}}&nbsp;&nbsp;<cite title="Source title">{{i.created_at}}</cite></footer>
+                            <footer class="blockquote-footer">{{i.user.first_name}}&nbsp;&nbsp;<cite title="{{i.title}}">{{i.created_at}}</cite></footer>
                         </blockquote>
                     </div>
                     <div class="col-auto">
                       {% if i.image %}
-                        <img src="{{i.image.url}}" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                      <div class="rectangle-image">
+                        <img src="{{i.image.url}}" alt="Image" class="img-fluid m-3">
+                      </div>
                       {% else %}
-                        <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                      <div class="rectangle-image">
+                        <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" alt="Image" class="img-fluid m-3">
+                      </div>
                       {% endif %}
                     </div>
                 </div>
@@ -116,7 +165,7 @@
         <div id="content_{{object.id}}" class="card mt-4">
           <div class="card-header">
               <div>
-                  <a href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
+                  <a class="blog_list" href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
               </div>
           </div>
           <div class="card-body py-0 px-2">
@@ -124,14 +173,18 @@
                   <div class="col">
                       <blockquote class="blockquote mb-0">
                           <p><small>{{object.content|striptags|slice:":200"|lower|safe}}...</small></p>
-                          <footer class="blockquote-footer">{{object.user.first_name}}&nbsp;&nbsp;<cite title="Source title">{{object.created_at}}</cite></footer>
+                          <footer class="blockquote-footer">{{object.user.first_name}}&nbsp;&nbsp;<cite title="{{object.title}}">{{object.created_at}}</cite></footer>
                       </blockquote>
                   </div>
                   <div class="col-auto">
                     {% if object.image %}
-                      <img src="{{object.image.url}}" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                    <div class="rectangle-image">
+                      <img src="{{object.image.url}}" alt="Image" class="img-fluid m-3">
+                    </div>
                     {% else %}
-                      <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" width="100px" height="100px" alt="Image" class="img-fluid m-3">
+                    <div class="rectangle-image">
+                      <img src="https://hips.hearstapps.com/hmg-prod/images/blue-lake-water-with-waves-background-royalty-free-image-1701283846.jpg?crop=0.66667xw:1xh;center,top&resize=1200:*" class="img-fluid m-3">
+                    </div>
                     {% endif %}
                   </div>
               </div>
@@ -139,32 +192,34 @@
         </div>
       
       {% endfor %}
-
     </div>
     <div class="col-lg-4"> <!-- Use col-lg-* for large screens, col-md-* for medium screens, and col-* for small screens -->
       <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
           <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
           <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-          <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
         </ol>
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <div class="carousel_div px-4">
-              <h3>Most liked</h3>
+            <div class="carousel_div p-4">
+              <h3 class="text-center">Most liked</h3><hr>
               <ol>
                 {% for i in most_likes %}
-                <li><a href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a></li>
-              {% endfor %}
-              </ol>
+                <li><a class="most_liked_links" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a></li>
+                {% endfor %}
+              </ol><br>
             </div>
             {% comment %} <img src="" class="d-block w-100" alt="..."> {% endcomment %}
           </div>
           <div class="carousel-item">
-            <div class="carousel_div pb-4">
-              <h3>Most rated</h3>
+            <div class="carousel_div p-4">
+              <h3 class="text-center">Most rated</h3><hr>
+              <ol>
+                {% for i in top_rated %}
+                <li><a class="most_liked_links" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a></li>
+                {% endfor %}
+              </ol><br>
             </div>
-            {% comment %} <img src="..." class="d-block w-100" alt="..."> {% endcomment %}
           </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -176,16 +231,6 @@
           <span class="sr-only">Next</span>
         </a>
       </div>
-      {% comment %} <div class="list-group">
-        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">List group item heading</h5>
-            <small>3 days ago</small>
-          </div>
-          <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-          <small>Donec id elit non mi porta.</small>
-        </a>
-      </div> {% endcomment %}
     </div>
   </div>
 </div>
