@@ -248,7 +248,6 @@
   <div class="row">
     <div class="col-lg-8"> <!-- Use col-lg-* for large screens, col-md-* for medium screens, and col-* for small screens -->
 
-
       <form method="post" action="{% url 'blog:search_feature' %}">
         {% csrf_token %}
         <div class="input-group mb-3 search-bar">
@@ -261,8 +260,6 @@
           <button class="btn btn-secondary btn-sm" value="{{tag.name}}" name="search">{{tag.name}}</button>
         {% endfor %}
       </form>
-    
-    
       
       {% if query %}
         {% if searched %}
@@ -273,9 +270,12 @@
                 <div>
                     <a class="blog_list" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
                 </div>
+                {% if i.user == request.user %}
                 <div class="checkbox-wrapper-12" data-blog-id="{{i.id}}">
                   <div class="cbx">
-                    <input checked="" type="checkbox" id="cbx-12">
+                    <input 
+                      checked=""
+                    type="checkbox" id="cbx-12">
                     <label for="cbx-12"></label>
                     <svg fill="none" viewBox="0 0 15 14" height="14" width="15">
                       <path d="M2 8.36364L6.23077 12L13 2"></path>
@@ -292,6 +292,7 @@
                     </defs>
                   </svg>
                 </div>
+                {% endif %}
               </div>
             </div>
             <div class="card-body py-0 px-2">
@@ -330,9 +331,16 @@
                   <a class="blog_list" href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
               </div>
               {% comment %} button test{% endcomment %}
+              {% if object.user == request.user %}
               <div class="checkbox-wrapper-12" data-blog-id="{{object.id}}">
                 <div class="cbx">
-                  <input checked="" type="checkbox" id="cbx-12">
+                  <input title="save real later"
+                    {% for j in link_container %}
+                      {% if object.id == j.blog.id %}
+                      checked="" 
+                      {% endif %}
+                    {% endfor %}
+                  type="checkbox" id="cbx-12">
                   <label for="cbx-12"></label>
                   <svg fill="none" viewBox="0 0 15 14" height="14" width="15">
                     <path d="M2 8.36364L6.23077 12L13 2"></path>
@@ -349,6 +357,7 @@
                   </defs>
                 </svg>
               </div>
+              {% endif %}
              {% comment %} button test{% endcomment %}
               </div>
               
@@ -405,7 +414,7 @@
                 {% for i in top_rated %}
                 <li><a class="most_liked_links" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a></li>
                 {% endfor %}
-              </ol><br>
+              </ol><br> 
             </div>
           </div>
         </div>
@@ -429,7 +438,11 @@
     for(let i = 0;i < sel.length;i++){
       sel[i].addEventListener('click',(e)=>{
         const blog_id = sel[i].dataset.blogId;
-        console.log(blog_id);
+        const url = "/save-link/"+blog_id+"/";
+        console.log(url);
+        fetch(url)
+        .then(response => response.json())
+        .then(data => console.log(data.status))
       })
     }
   })

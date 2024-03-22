@@ -9,10 +9,11 @@ from django.urls import reverse,reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import UpdateView,DeleteView
+from django.db.models import Exists,Count,Subquery,OuterRef,Q
 from taggit.models import Tag
 
 from account.models import User,Profile,Follow
-from blog.models import CreateBlogModel,Rating,BlogCommentModel
+from blog.models import CreateBlogModel,Rating,BlogCommentModel,LinkContainerModel
 from account.forms import userSignupForm,ProfileForm
 
 activeUser = get_user_model()
@@ -129,9 +130,13 @@ def userLogout(request):
 
 class Library(View):
     def get(self,request):
-        blog_public = CreateBlogModel.objects.filter(user = request.user)
+        user_blog = CreateBlogModel.objects.filter(user = request.user)
+        
+        saved_blog = CreateBlogModel.objects.annotate(has_link = Exists(LinkContainerModel.objects.filter(blog__id = OuterRef('pk'),user = request.user))).filter(has_link = True)
+        
         context = {
-            'blog_public':blog_public,
+            'user_blog':user_blog,
+            'saved_blog':saved_blog,
         }
         return render(request,'library.html',context)
 

@@ -8,14 +8,39 @@
         .card:hover{
             box-shadow:2px 2px 10px 5px rgb(203, 203, 203);
           }
+        .saved{
+          padding:1rem;
+          border-radius:5px;
+          height:70vh;
+        }
+        .saved ol{
+          padding-left:2rem;
+          margin:0px;
+        }
+        .blog_title{
+          color:black;
+          text-decoration:none;
+        }
+        .blog_title:hover{
+          color:black;
+          text-decoration:underline;
+        }
     </style>
     <div>
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 border">
+                <div class="col-lg-3">
+                  <div class="saved border">
+                    <h5 class="read_later pt-2">Read later</h5><hr>
+                    <ol>
+                      {% for i in saved_blog %}
+                      <li><a class="blog_title" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a></li>
+                      {% endfor %}
+                    </ol>
+                  </div>
                 </div>
                 <div class="col-lg-9">
-                    <h4><a style="text-dark" href="{% url 'account:Library' %}">Library</a></h4>
+                    <h4><a class="text-dark" href="{% url 'account:Library' %}">Library</a></h4>
 
                     <form method="post" action="{% url 'account:search_feature_library' %}">
                         {% csrf_token %}
@@ -33,7 +58,7 @@
                         <div id="content_{{ i.id }}" class="card mt-4">
                             <div class="card-header d-flex justify-content-between">
                               <div>
-                                <a href="{% url 'blog:blog_detail' i.id %}">{{ i.title }}</a>
+                                <a class="blog_title" href="{% url 'blog:blog_detail' i.id %}">{{ i.title }}</a>
                               </div>
                               <div class="dropdown">
                                 <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton_{{ i.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -68,12 +93,12 @@
                         {% endif %}
                     {% endif %}
 
-                    {% for b in blog_public %}
+                    {% for b in user_blog %}
                         <div>
                             <div id="content_{{ b.id }}" class="card mt-4">
                                 <div class="card-header d-flex justify-content-between">
                                   <div>
-                                    <a href="{% if b.status == 'public' %}{% url 'blog:blog_detail' b.id %} {% else %} {% url 'blog:update_blog' b.id %} {% endif %}">{{ b.title }}</a>&nbsp;&nbsp;&nbsp;
+                                    <a class="blog_title" href="{% if b.status == 'public' %}{% url 'blog:blog_detail' b.id %} {% else %} {% url 'blog:update_blog' b.id %} {% endif %}">{{ b.title }}</a>&nbsp;&nbsp;&nbsp;
                                     {% if b.status == 'draft' %}<span class="badge badge-warning">DRAFT</span>{% endif %}
                                   </div>
                                   <div class="dropdown">

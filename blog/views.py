@@ -18,8 +18,6 @@ from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,L
 from blog.forms import CreateBlogForm,CommentForm
 from account.models import Profile
 
-from taggit.models import Tag
-
 class Home(ListView):
     template_name = 'home.html'
     model = CreateBlogModel
@@ -40,6 +38,9 @@ class Home(ListView):
 
         top_rated = CreateBlogModel.objects.filter(status = "public").annotate(avg_rate = Avg('blog_rate__rate')).order_by('-avg_rate')[:5]
         context['top_rated'] = top_rated
+
+        link_container = LinkContainerModel.objects.filter(user = self.request.user) if self.request.user.is_authenticated else None
+        context['link_container'] = link_container
 
         return context
 
@@ -225,7 +226,8 @@ def rateBlog(request,pk):
 ,'total_rate_fetch':sum([i.rate for i in Rating.objects.filter(blog__id = pk)]),'total_rate_user_fetch':len(Rating.objects.filter(blog=CreateBlogModel.objects.get(id = pk)))},safe=False)
 
 def LinkContainer(request,pk):
-    get,create = LinkContainerModel.objects.get_or_create(blog__id = pk,user = request.user)
+    get,create = LinkContainerModel.objects.get_or_create(blog=CreateBlogModel.objects.get(id = pk),user = request.user)
+
     if not create:
         if get:
             get.delete()
