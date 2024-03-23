@@ -29,7 +29,7 @@ class Home(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = len(CreateBlogModel.tags.all()))
+        context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = len(CreateBlogModel.tags.all()) if len(CreateBlogModel.tags.all()) < 5 else 9)
 
         blogs_with_likes = CreateBlogModel.objects.annotate(num_likes=Count('blog_like'))
         blogs_with_at_least_one_like = blogs_with_likes.filter(num_likes__gt=0)
@@ -141,6 +141,13 @@ def BlogDetail(request,pk):
         avg_rate=0
         total_rate = 0
 
+
+    saved_blog = None
+    try:
+        saved_blog = LinkContainerModel.objects.get(blog = CreateBlogModel.objects.get(id = pk),user = request.user)
+        print(saved_blog)
+    except LinkContainerModel.DoesNotExist:
+        pass
     context = {
         'blog_model':blog_model,
         'blog_model_tags':blog_model_tags,
@@ -149,6 +156,7 @@ def BlogDetail(request,pk):
         'total_likes':len(LikeModel.objects.filter(blog = blog_model)),
         'total_rate':total_rate,
         'avg_rate':avg_rate,
+        'saved_blog':saved_blog,
         'total_rate_user':len(Rating.objects.filter(blog__id=blog_model.id)),
         'like':LikeModel.objects.filter(blog=blog_model,user=request.user).exists() if request.user.is_authenticated else None,
         'profile_info':Profile.objects.get(user=blog_model.user),

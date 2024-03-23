@@ -271,7 +271,7 @@
                 <div>
                     <a class="blog_list" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
                 </div>
-                {% if i.user == request.user %}
+                {% if request.user.is_authenticated %}
                 <div class="checkbox-wrapper-12" data-blog-id="{{i.id}}">
                   <div class="cbx">
                     <input 
@@ -335,7 +335,7 @@
                   <a class="blog_list" href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
               </div>
               {% comment %} button test{% endcomment %}
-              {% if object.user == request.user %}
+              {% if request.user.is_authenticated %}
               <div class="checkbox-wrapper-12" data-blog-id="{{object.id}}">
                 <div class="cbx">
                   <input title="save real later"
@@ -450,7 +450,6 @@
       })
     }
   })
-
 </script>
 
 {% endblock %}  
