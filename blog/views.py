@@ -6,7 +6,7 @@ from django.views.generic.edit import UpdateView,DeleteView
 from django.views import View
 from django.contrib import messages
 from django.http import HttpResponse,JsonResponse
-from django.db.models import Q,Count,Avg
+from django.db.models import Q,Count,Avg,Exists,OuterRef
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from decouple import config
@@ -50,11 +50,14 @@ def search_feature(request):
         blog_model = CreateBlogModel.objects.filter(Q(title__icontains=search_query) | Q(tags__name__icontains=search_query)).distinct()
         context = {
             'query':search_query,
-            'searched':blog_model
+            'searched':blog_model,
+            'link_container':LinkContainerModel.objects.filter(user = request.user) if request.user.is_authenticated else None
             # 'tag_search':CreateBlogModel.objects.filter(tags = Tag.objects.get(name = search_query)),
         }
-        return render(request,'home.html',context)
-    return render(request,'home.html')
+        if search_query:
+            return render(request,'home.html',context)
+        # return render(request,'home.html',context)
+    # return render(request,'home.html')
 
 
 @method_decorator(login_required,name='dispatch')

@@ -260,7 +260,8 @@
           <button class="btn btn-secondary btn-sm" value="{{tag.name}}" name="search">{{tag.name}}</button>
         {% endfor %}
       </form>
-      
+
+           
       {% if query %}
         {% if searched %}
           {% for i in searched %}
@@ -274,7 +275,11 @@
                 <div class="checkbox-wrapper-12" data-blog-id="{{i.id}}">
                   <div class="cbx">
                     <input 
+                    {% for j in link_container %}
+                      {% if i.id == j.blog.id %}
                       checked=""
+                      {% endif %}
+                    {% endfor %}
                     type="checkbox" id="cbx-12">
                     <label for="cbx-12"></label>
                     <svg fill="none" viewBox="0 0 15 14" height="14" width="15">
@@ -320,8 +325,7 @@
           {% endfor %}
         {% endif %}
       {% endif %}
-            
-
+          
 
       {% for object in object_list %}
         <div id="content_{{object.id}}" class="card mt-4">
