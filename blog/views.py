@@ -6,7 +6,7 @@ from django.views.generic.edit import UpdateView,DeleteView
 from django.views import View
 from django.contrib import messages
 from django.http import HttpResponse,JsonResponse
-from django.db.models import Q,Count,Avg,Exists,OuterRef
+from django.db.models import Q,Count,Avg,Exists,OuterRef,Max
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from decouple import config
@@ -36,7 +36,8 @@ class Home(ListView):
         blogs_ordered_by_likes_desc = blogs_with_at_least_one_like.order_by('-num_likes')
         context['most_likes'] = blogs_ordered_by_likes_desc[:5]
 
-        top_rated = CreateBlogModel.objects.filter(status = "public").annotate(avg_rate = Avg('blog_rate__rate')).order_by('-avg_rate')[:5]
+        # top_rated = CreateBlogModel.objects.filter(status = "public").annotate(avg_rate = Avg('blog_rate__rate')).order_by('avg_rate')[:5]
+        top_rated = Rating.objects.annotate(avg=Max('rate')).order_by('-avg')
         context['top_rated'] = top_rated
 
         link_container = LinkContainerModel.objects.filter(user = self.request.user) if self.request.user.is_authenticated else None
