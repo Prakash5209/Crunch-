@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic.edit import UpdateView,DeleteView
 from django.db.models import Exists,Count,Subquery,OuterRef,Q
 from taggit.models import Tag
+from django.contrib.auth.models import User
 
 from account.models import User,Profile,Follow
 from blog.models import CreateBlogModel,Rating,BlogCommentModel,LinkContainerModel
@@ -161,3 +162,26 @@ class DeleteBlog_library(DeleteView):
     model = CreateBlogModel
     success_url = reverse_lazy('account:Library')
     template_name = 'read_blog.html'
+
+
+class Forgot_password(View):
+    def post(self, request):
+        email = request.POST.get('email')
+        password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        verify_email = None
+        try:
+            verify_email = User.objects.get(email = email)
+        except:
+            verify_email = None
+
+        if verify_email != None and password == confirm_password:
+            verify_email.set_password(confirm_password)
+            verify_email.save()
+            print('saved')
+            return redirect('account:userLogin')
+            
+        return render(request,'fpassword.html')
+
+    def get(self, request):
+        return render(request,'fpassword.html')

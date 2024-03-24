@@ -196,6 +196,40 @@ body{
         grid-template-columns: repeat(4, 1fr);
     }
 }
+
+
+
+.contact-us {
+    background-color: #f0f0f0;
+    padding: 30px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  .contact-us p {
+    font-size: 16px;
+    line-height: 1.5; /* Improves readability by adding space between lines */
+    margin-bottom: 20px;
+    color: #666;
+  }
+  
+  .contact-button {
+    background-color: #28a745; /* Green color */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .contact-button:hover {
+    background-color: #218c3f; /* Darker green on hover */
+    color:white;
+    text-decoration:none;
+  }
+  
   </style>
 
 
@@ -238,19 +272,12 @@ body{
       </div>
 
       <div class = "contact-form">
-        <form>
-          <div>
-            <input type = "text" class = "form-control" placeholder="First Name">
-            <input type = "text" class = "form-control" placeholder="Last Name">
-          </div>
-          <div>
-            <input type = "email" class = "form-control" placeholder="E-mail">
-            <input type = "text" class = "form-control" placeholder="Phone">
-          </div>
-          <textarea rows = "5" placeholder="Message" class = "form-control"></textarea>
-          <input type = "submit" class = "send-btn" value = "send message">
-        </form>
-
+        <div>
+            <section class="contact-us">
+                <p>Have a question about our services or a business proposition in mind? We'd love to hear from you! Reach out to our dedicated team through our contact form or give us a call. We're committed to building strong partnerships and exploring opportunities that benefit everyone involved.</p>
+                <a href="mailto:info@example.com" class="contact-button">Send Email</a>
+            </section>
+        </div>
         <div>
           <img src = "https://github.com/prabinmagar/contact-us-page-/blob/master/image/contact-png.png?raw=true" alt = "">
         </div>

@@ -30,8 +30,3 @@ class ProfileForm(forms.ModelForm):
             if i == 'dob':
                 self.fields[i].widget.attrs.update({'placeholder':'yyyy-mm-dd'})
             self.fields[i].widget.attrs.update({'class':'form-control'})
-# class CustomUserModel(UserCreationForm):
-#     email = forms.EmailField(required=True)
-#     class Meta:
-#         model = User
-#         fields = ('email','password')

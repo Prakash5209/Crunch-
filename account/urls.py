@@ -1,7 +1,7 @@
 from django.urls import path
 from account import views
 
-from .views import ViewProfile,FollowInProfile,UpdateProfile,Library,search_feature_library,DeleteBlog_library
+from .views import ViewProfile,FollowInProfile,UpdateProfile,Library,search_feature_library,DeleteBlog_library,Forgot_password
 
 app_name = "account"
 urlpatterns = [
@@ -15,4 +15,6 @@ urlpatterns = [
     path('library/',Library.as_view(),name="Library"),
     path('search-library/',search_feature_library,name='search_feature_library'),
     path('delete-blog/<int:pk>/',DeleteBlog_library.as_view(),name="DeleteBlog_library"),
+
+    path('forgot-password/',Forgot_password.as_view(),name="Forgot_password"),
 ]
