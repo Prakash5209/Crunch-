@@ -145,7 +145,11 @@ def BlogDetail(request,pk):
 
     saved_blog = None
     try:
-        saved_blog = LinkContainerModel.objects.get(blog = CreateBlogModel.objects.get(id = pk),user = request.user)
+        if request.user.is_authenticated:
+            saved_blog = LinkContainerModel.objects.get(blog = CreateBlogModel.objects.get(id = pk),user = request.user)
+        else:
+            saved_blog = None
+
         print(saved_blog)
     except LinkContainerModel.DoesNotExist:
         pass
