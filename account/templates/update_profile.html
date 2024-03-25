@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+{% if messages %}
+<div class="alert alert-warning" role="alert">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
 <div id="second">
     <form method='POST' enctype="multipart/form-data">
       {% csrf_token %}

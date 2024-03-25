@@ -27,10 +27,12 @@ def userLogin(request):
         if user:
             login(request,user)
             var = User.objects.get(email = request.user)
-            if(var.first_name, var.last_name == ''):
+            if(var.first_name == '' and var.last_name == ''):
+                messages.info(request,"you cannot post any blog without filling your details")
                 return redirect(reverse('account:UpdateProfile',args=(request.user.profiles.id,)))
-                print('testing')
-            return redirect('blog:home')
+            else:
+                messages.info(request,'logged in successfully')
+                return redirect('blog:home')
         else:
             messages.info(request, "incorrect input")
     return render(request,'login.html')
@@ -126,6 +128,7 @@ def userSignup(request):
 
 def userLogout(request):
     logout(request)
+    messages.info(request,'logged out successfully')
     return redirect('blog:home')
 
 

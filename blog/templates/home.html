@@ -243,7 +243,13 @@
 }
 
 </style>
-
+{% if messages %}
+<div class="alert alert-primary" role="alert">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
 <div class="container">
   <div class="row">
     <div class="col-lg-8"> <!-- Use col-lg-* for large screens, col-md-* for medium screens, and col-* for small screens -->
