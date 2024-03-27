@@ -37,8 +37,6 @@ class Home(ListView):
         context['most_likes'] = blogs_ordered_by_likes_desc[:5]
 
         top_rated = Rating.objects.annotate(avg=Max('rate')).order_by('-avg')
-        for i in top_rated:
-            print(i.blog,i.id)
         context['top_rated'] = top_rated
 
         link_container = LinkContainerModel.objects.filter(user = self.request.user) if self.request.user.is_authenticated else None
