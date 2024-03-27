@@ -36,8 +36,9 @@ class Home(ListView):
         blogs_ordered_by_likes_desc = blogs_with_at_least_one_like.order_by('-num_likes')
         context['most_likes'] = blogs_ordered_by_likes_desc[:5]
 
-        # top_rated = CreateBlogModel.objects.filter(status = "public").annotate(avg_rate = Avg('blog_rate__rate')).order_by('avg_rate')[:5]
         top_rated = Rating.objects.annotate(avg=Max('rate')).order_by('-avg')
+        for i in top_rated:
+            print(i.blog,i.id)
         context['top_rated'] = top_rated
 
         link_container = LinkContainerModel.objects.filter(user = self.request.user) if self.request.user.is_authenticated else None

@@ -421,8 +421,8 @@
             <div class="carousel_div p-4">
               <h3 class="text-center">Most rated</h3><hr>
               <ol>
-                {% for i in top_rated %}
-                <li><a class="most_liked_links" href="{% url 'blog:blog_detail' i.id %}">{{i.blog.title}}</a></li>
+                {% for j in top_rated %}
+                <li><a class="most_liked_links" href="{% url 'blog:blog_detail' j.blog.id %}">{{j.blog.title}}</a></li>
                 {% endfor %}
               </ol><br> 
             </div>
