@@ -30,7 +30,7 @@ class CreateBlogModel(TimeStampModel):
         return f'title:{self.title}, by:{self.user}'
     
 class BlogCommentModel(TimeStampModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     blog_id = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE)
     parent_comment = models.ForeignKey('self',null = True,blank = True,on_delete=models.CASCADE,related_name = 'replies')
     comment = models.TextField()

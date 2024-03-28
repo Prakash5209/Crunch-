@@ -29,7 +29,7 @@ class Home(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = len(CreateBlogModel.tags.all()) if len(CreateBlogModel.tags.all()) < 5 else 9)
+        context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = len(CreateBlogModel.tags.all()) if len(CreateBlogModel.tags.all()) < 5 else len(CreateBlogModel.tags.all()[:9]))
 
         blogs_with_likes = CreateBlogModel.objects.annotate(num_likes=Count('blog_like'))
         blogs_with_at_least_one_like = blogs_with_likes.filter(num_likes__gt=0)
@@ -91,6 +91,7 @@ class CreateBlog(FormView):
                 tags = self.request.POST.get('tags').split(',')
                 obj.tags.add(*tags)
                 if obj.save():
+                    messages.info(self.request,'blog created successfully')
                     return redirect(reverse('account:ProfileView',args=(self.request.user.profiles.id,)))
                 print('valid content')
                 return super().form_valid(form)
