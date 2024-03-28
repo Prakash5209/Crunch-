@@ -78,6 +78,7 @@ class CreateBlog(FormView):
         title_check = set(title.split(' ')).intersection(set(profan_list))
         # content_check = set(content.split(' ').intersection(set(profan_list)))
         if len(title_check) > 0 and len(result) > 0:
+            print(title_check)
             return HttpResponse('invalid content')
         else:
             user_name = User.objects.get(email = self.request.user)
