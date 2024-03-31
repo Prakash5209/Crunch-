@@ -275,7 +275,7 @@
             <div class="card-header">
               <div class="d-flex justify-content-between">
                 <div>
-                    <a class="blog_list" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a>
+                    <a class="blog_list" href="{% url 'blog:blog_detail' i.id %}">{{i.title|striptags|safe}}</a>
                 </div>
                 {% if request.user.is_authenticated %}
                 <div class="checkbox-wrapper-12" data-blog-id="{{i.id}}">
@@ -338,6 +338,7 @@
           <div class="card-header">
               <div class="d-flex justify-content-between">
                 <div>
+                  {% comment %} <a class="blog_list" href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a> {% endcomment %}
                   <a class="blog_list" href="{% url 'blog:blog_detail' object.id %}">{{object.title}}</a>
               </div>
               {% comment %} button test{% endcomment %}

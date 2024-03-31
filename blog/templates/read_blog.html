@@ -210,7 +210,7 @@
 <!-- <div class="container"> -->
 <div class="row">
     <div class="col-md-8">
-      <h2><b>{{blog_model.title }}</b></h2>
+      <h2><b>{{blog_model.title}}</b></h2>
       <div class="d-flex justify-content-between">
         <div class="d-flex align-items-start">
           <div class="circle-image mr-3">
@@ -323,7 +323,7 @@
                     <div class="d-flex flex-wrap">
                       <div class="circle-image-comment mr-2">
                         {% if comment.user.profiles.avatar %}
-                          <img src="{{profile_info.avatar.url}}" alt="Image description">
+                          <img src="{{comment.user.profiles.avatar.url}}" alt="Image description">
                         {% else %}
                           <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg" alt="Image description">
                         {% endif %}

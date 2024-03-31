@@ -10,12 +10,14 @@ from django.db.models import Q,Count,Avg,Exists,OuterRef,Max
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from decouple import config
+from django.dispatch import Signal
 from django.http import Http404
 import random
 import re,json
 
 from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,LinkContainerModel
 from blog.forms import CreateBlogForm,CommentForm
+from account.views import userLogin
 from account.models import Profile
 
 class Home(ListView):
@@ -24,17 +26,15 @@ class Home(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(status = 'public')
+        queryset = queryset.filter(status = 'public').order_by('-created_at')
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = len(CreateBlogModel.tags.all()) if len(CreateBlogModel.tags.all()) < 5 else len(CreateBlogModel.tags.all()[:9]))
 
-        blogs_with_likes = CreateBlogModel.objects.annotate(num_likes=Count('blog_like'))
-        blogs_with_at_least_one_like = blogs_with_likes.filter(num_likes__gt=0)
-        blogs_ordered_by_likes_desc = blogs_with_at_least_one_like.order_by('-num_likes')
-        context['most_likes'] = blogs_ordered_by_likes_desc[:5]
+        blogs_with_likes = CreateBlogModel.objects.annotate(num_likes=Count('blog_like')).filter(num_likes__gt=0).order_by('-num_likes')[:5]
+        context['most_likes'] = blogs_with_likes
 
         top_rated = Rating.objects.annotate(avg=Max('rate')).order_by('-avg')
         context['top_rated'] = top_rated
@@ -51,11 +51,15 @@ def search_feature(request):
         context = {
             'query':search_query,
             'searched':blog_model,
+            'top_rated':Rating.objects.annotate(avg=Max('rate')).order_by('-avg'),
+            'most_likes':CreateBlogModel.objects.annotate(num_likes=Count('blog_like')).filter(num_likes__gt=0).order_by('-num_likes')[:5],
             'link_container':LinkContainerModel.objects.filter(user = request.user) if request.user.is_authenticated else None
             # 'tag_search':CreateBlogModel.objects.filter(tags = Tag.objects.get(name = search_query)),
         }
         if search_query:
             return render(request,'home.html',context)
+        else:
+            return render(request,'home.html')
         # return render(request,'home.html',context)
     # return render(request,'home.html')
 
@@ -105,6 +109,7 @@ def BlogDetail(request,pk):
     profan = config('profanity')
     profan_list = profan.split('-')
 
+    #parent comment
     if request.method == 'POST':
         if blog_comment_form.is_valid():
             raw_comment = blog_comment_form.cleaned_data['comment']
@@ -121,8 +126,11 @@ def BlogDetail(request,pk):
                     obj.save()
                     return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
                 else:
+                    request.session['next'] = pk
                     return redirect('account:userLogin')
-                
+
+
+    #child comment
     if request.method == 'POST':
         comment_id = request.POST.get('parent_comment_id')
         comment = request.POST.get('reply')
