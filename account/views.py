@@ -19,7 +19,8 @@ from account.forms import userSignupForm,ProfileForm
 
 activeUser = get_user_model()
 
-def userLogin(request):
+def userLogin(request,**kwargs):
+    print(kwargs.get('data'))
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -32,12 +33,15 @@ def userLogin(request):
                 return redirect(reverse('account:UpdateProfile',args=(request.user.profiles.id,)))
             else:
                 messages.info(request,'logged in successfully')
+                print('session',request.session.get('next'))
+                if request.session.get('next'):
+                    return redirect(reverse('blog:blog_detail',args=(request.session.get('next'),)))
+                del(request.session['next'])
                 return redirect('blog:home')
         else:
             messages.info(request, "incorrect input")
     return render(request,'login.html')
 
-# chaudhary123
 
 class ViewProfile(View):
 

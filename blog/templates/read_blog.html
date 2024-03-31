@@ -323,7 +323,7 @@
                     <div class="d-flex flex-wrap">
                       <div class="circle-image-comment mr-2">
                         {% if comment.user.profiles.avatar %}
-                          <img src="{{profile_info.avatar.url}}" alt="Image description">
+                          <img src="{{comment.user.profiles.avatar.url}}" alt="Image description">
                         {% else %}
                           <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg" alt="Image description">
                         {% endif %}

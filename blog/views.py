@@ -10,12 +10,14 @@ from django.db.models import Q,Count,Avg,Exists,OuterRef,Max
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from decouple import config
+from django.dispatch import Signal
 from django.http import Http404
 import random
 import re,json
 
 from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,LinkContainerModel
 from blog.forms import CreateBlogForm,CommentForm
+from account.views import userLogin
 from account.models import Profile
 
 class Home(ListView):
@@ -124,7 +126,8 @@ def BlogDetail(request,pk):
                     obj.save()
                     return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
                 else:
-                    return redirect('account:userLogin',context={'path':request.path})
+                    request.session['next'] = pk
+                    return redirect('account:userLogin')
 
 
     #child comment
