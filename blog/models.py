@@ -63,3 +63,21 @@ class LinkContainerModel(models.Model):
 
     def __str__(self):
         return f"{self.id}"
+
+class Notification(TimeStampModel):
+    fields = models.CharField(max_length=255,null=True,blank=True)
+
+    def __str__(self):
+        return self.fields
+
+
+
+
+
+
+
+
+
+
+
+
