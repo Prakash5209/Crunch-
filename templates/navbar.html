@@ -58,6 +58,9 @@
         <li class="nav-item {% if request.path == '/create-blog/' %}active{% endif %}">
           <a class="nav-link" href="{% url 'blog:create_blog' %}">write</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href=""><i class="fa-regular fa-bell fa-lg"></i><span><sup>8</sup></span></a>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle {% if request.path == '/account/profileview/2/' %}active{% endif %}" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{request.user.email}}</a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
