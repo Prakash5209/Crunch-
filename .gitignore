@@ -1,5 +1,7 @@
 **/migrations/
 mediafiles/
+*.swo
+*.swp
 .env
 # Django #
 *.log
