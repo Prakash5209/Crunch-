@@ -18,3 +18,4 @@ admin.site.register(CreateBlogModel,YourModelAdmin)
 admin.site.register(LikeModel)
 admin.site.register(Rating)
 admin.site.register(LinkContainerModel)
+
