@@ -36,7 +36,8 @@ def userLogin(request,**kwargs):
                 print('session',request.session.get('next'))
                 if request.session.get('next'):
                     return redirect(reverse('blog:blog_detail',args=(request.session.get('next'),)))
-                del(request.session['next'])
+                if request.session.get('next'):
+                    del(request.session['next'])
                 return redirect('blog:home')
         else:
             messages.info(request, "incorrect input")
