@@ -15,10 +15,10 @@ from django.http import Http404
 import random
 import re,json
 
-from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,LinkContainerModel
+from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,LinkContainerModel,Notification
 from blog.forms import CreateBlogForm,CommentForm
 from account.views import userLogin
-from account.models import Profile
+from account.models import Profile,Follow
 
 class Home(ListView):
     template_name = 'home.html'
@@ -41,7 +41,6 @@ class Home(ListView):
 
         link_container = LinkContainerModel.objects.filter(user = self.request.user) if self.request.user.is_authenticated else None
         context['link_container'] = link_container
-
         return context
 
 def search_feature(request):
@@ -64,44 +63,119 @@ def search_feature(request):
     # return render(request,'home.html')
 
 
+@method_decorator(login_required,name="dispatch")
+class CreateBlog(View):
+
+    def get(self,request):
+        form = CreateBlogForm(request.POST or None)
+        context = {'form':form}
+        return render(request,'create_blog.html',context)
+
+    def post(self,request):
+        form = CreateBlogForm(request.POST or None)
+        user_name = User.objects.get(email = self.request.user)
+        if user_name.first_name == '' and user_name.last_name == '':
+            return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles.id,)))
+        else:
+            if form.is_valid():
+                print('valid')
+                profan = config('profanity')
+                profan_list = profan.split('-')
+                title = form.cleaned_data['title']
+                content = form.cleaned_data['content']
+
+                pattern = re.compile('<.*?>')
+                result = re.sub(pattern,'',content)
+                title_check = set(title.split(' ')).intersection(set(profan_list))
+                if len(title_check) > 0 and len(result) > 0:
+                    print(title_check)
+                    return HttpResponse('invalid content')
+                else:
+                    obj = form.save(commit = False)
+                    obj.user = self.request.user
+                    tags = self.request.POST.get('tags').split(',')
+                    obj.save()
+                    print(obj)
+                    obj.tags.add(*tags)
+                    if obj:
+                        print('saved')
+                        messages.info(self.request,'blog created successfully')
+                        users,blog = self.request.user,obj.title
+                        lst = [i.youser for i in Follow.objects.filter(follow = self.request.user)]
+                        ope = list(map(lambda x:Notification(fields=f"{users} posted a blog on {blog}",blog=obj,users=self.request.user,me_user=x).save(),lst))
+                        print(ope)
+                        return redirect(reverse('account:ProfileView',args=(self.request.user.id,)))
+            return render(request,'create_blog.html')
+
+
+
 @method_decorator(login_required,name='dispatch')
-class CreateBlog(FormView):
+class UpdateBlog(UpdateView):
+    model = CreateBlogModel
     template_name = 'create_blog.html'
     form_class = CreateBlogForm
-    success_url = "/"
 
-    def form_valid(self,form):
-        profan = config('profanity')
-        profan_list = profan.split('-')
-        title = form.cleaned_data['title']
-        content = form.cleaned_data['content']
-
-        pattern = re.compile('<.*?>')
-        result = re.sub(pattern,'',content)
-
-        title_check = set(title.split(' ')).intersection(set(profan_list))
-        # content_check = set(content.split(' ').intersection(set(profan_list)))
-        if len(title_check) > 0 and len(result) > 0:
-            print(title_check)
-            return HttpResponse('invalid content')
+    def form_valid(self, form):
+        print(self.object)
+        self.object = form.save()
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        var =  self.request.POST.get('status')
+        if var == 'public':
+            messages.success(self.request,"blog updated!")
+            return reverse_lazy('blog:blog_detail',kwargs={'pk':self.object.pk})
         else:
-            user_name = User.objects.get(email = self.request.user)
-            if user_name.first_name == '' and user_name.last_name == '':
-                return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles.id,)))
-            else:
-                obj = form.save(commit = False)
-                obj.user = self.request.user
-                obj.save()
-                tags = self.request.POST.get('tags').split(',')
-                obj.tags.add(*tags)
-                if obj.save():
-                    messages.info(self.request,'blog created successfully')
-                    return redirect(reverse('account:ProfileView',args=(self.request.user.profiles.id,)))
-                print('valid content')
-                return super().form_valid(form)
-            return redirect('blog:home')
+            messages.success(self.request,"blog updated!")
+            return reverse_lazy('blog:home')
+        # return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
     
-    
+    def dispatch(self, request, *args, **kwargs):
+        blog = self.get_object()
+        if blog.user != self.request.user:
+            raise Http404("You do not have permission to access this page.")
+        return super().dispatch(request, *args, **kwargs)
+
+
+
+#@method_decorator(login_required,name='dispatch')
+#class CreateBlog(FormView):
+#    template_name = 'create_blog.html'
+#    form_class = CreateBlogForm
+#    success_url = "/"
+#
+#    def form_valid(self,form):
+#        profan = config('profanity')
+#        profan_list = profan.split('-')
+#        title = form.cleaned_data['title']
+#        content = form.cleaned_data['content']
+#
+#        pattern = re.compile('<.*?>')
+#        result = re.sub(pattern,'',content)
+#
+#        title_check = set(title.split(' ')).intersection(set(profan_list))
+#        # content_check = set(content.split(' ').intersection(set(profan_list)))
+#        if len(title_check) > 0 and len(result) > 0:
+#            print(title_check)
+#            return HttpResponse('invalid content')
+#        else:
+#            user_name = User.objects.get(email = self.request.user)
+#            if user_name.first_name == '' and user_name.last_name == '':
+#                return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles.id,)))
+#            else:
+#                obj = form.save(commit = False)
+#                obj.user = self.request.user
+#                tags = self.request.POST.get('tags').split(',')
+#                obj.save()
+#                obj.tags.add(*tags)
+#                if obj.save():
+#                    print('saved')
+#                    messages.info(self.request,'blog created successfully')
+#                    return redirect(reverse('account:ProfileView',args=(self.request.user.profiles.id,)))
+#                print('valid content')
+#                return super().form_valid(form)
+#           return redirect('blog:home')
+
 def BlogDetail(request,pk):
     blog_model = get_object_or_404(CreateBlogModel,status = 'public',id = pk)
     blog_model_tags = blog_model.tags.all()
@@ -128,7 +202,6 @@ def BlogDetail(request,pk):
                 else:
                     request.session['next'] = pk
                     return redirect('account:userLogin')
-
 
     #child comment
     if request.method == 'POST':
@@ -189,33 +262,6 @@ def like_post(request,pk):
     return JsonResponse({'status':created,'total':len(LikeModel.objects.filter(blog = blog))},safe=False)
 
 
-
-@method_decorator(login_required,name='dispatch')
-class UpdateBlog(UpdateView):
-    model = CreateBlogModel
-    template_name = 'create_blog.html'
-    form_class = CreateBlogForm
-
-    def form_valid(self, form):
-        print(self.object)
-        self.object = form.save()
-        return super().form_valid(form)
-    
-    def get_success_url(self):
-        var =  self.request.POST.get('status')
-        if var == 'public':
-            messages.success(self.request,"blog updated!")
-            return reverse_lazy('blog:blog_detail',kwargs={'pk':self.object.pk})
-        else:
-            messages.success(self.request,"blog updated!")
-            return reverse_lazy('blog:home')
-        # return reverse_lazy('blog:blog_detail', kwargs={'pk': self.object.pk})
-    
-    def dispatch(self, request, *args, **kwargs):
-        blog = self.get_object()
-        if blog.user != self.request.user:
-            raise Http404("You do not have permission to access this page.")
-        return super().dispatch(request, *args, **kwargs)
 
 @method_decorator(login_required,name='dispatch')
 class DeleteBlog(DeleteView):
