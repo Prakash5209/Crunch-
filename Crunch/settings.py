@@ -191,3 +191,7 @@ TINYMCE_COMPRESSOR = False
 # django-taggit settings
 
 TAGGIT_CASE_INSENSITIVE = True
+
+TIME_ZONE = 'Asia/Kathmandu'
+
+USE_TZ = True

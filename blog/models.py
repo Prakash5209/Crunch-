@@ -3,6 +3,7 @@ from tinymce import models as tinymce_models
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from taggit.managers import TaggableManager
+from django.utils import timezone
 
 from account.models import User
 
@@ -17,6 +18,11 @@ class TimeStampModel(models.Model):
     class Meta:
         abstract = True
         ordering = ['-modified_at','-created_at']
+
+    def save(self,*args,**kwargs):
+        self.created_at = timezone.now()
+        self.modified_at = timezone.now()
+        super().save(*args,**kwargs)
 
 class CreateBlogModel(TimeStampModel):
     image = models.ImageField(upload_to='post',blank=True,null=True)
