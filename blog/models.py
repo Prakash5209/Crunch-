@@ -64,7 +64,7 @@ class LinkContainerModel(models.Model):
     def __str__(self):
         return f"{self.id}"
 
-class Notification(TimeStampModel):
+class NotificationModel(TimeStampModel):
     fields = models.CharField(max_length=255,null=True,blank=True)
     viewed_status = models.BooleanField(default=False)
     blog = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE,null=True,blank=True)

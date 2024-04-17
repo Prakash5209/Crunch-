@@ -30,7 +30,10 @@ def userLogin(request,**kwargs):
             var = User.objects.get(email = request.user)
             if(var.first_name == '' and var.last_name == ''):
                 messages.info(request,"you cannot post any blog without filling your details")
-                return redirect(reverse('account:UpdateProfile',args=(request.user.profiles.id,)))
+                try:
+                    return redirect(reverse('account:UpdateProfile',args=(request.user.profiles.id,)))
+                except:
+                    return redirect('blog:home')
             else:
                 messages.info(request,'logged in successfully')
                 print('session',request.session.get('next'))
@@ -70,7 +73,6 @@ class ViewProfile(View):
         for i in my_blog:
             total_comments = total_comments + len([j for j in BlogCommentModel.objects.filter(blog_id = i.id)])
 
-        print(total_comments)
         context = {
             'profile_model': profile_model,
             'form': form,

@@ -1,0 +1,88 @@
+<!-- Button trigger modal -->
+<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalScrollable">
+  Launch demo modal
+</button>-->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">Notification</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group list-group-flush">
+        </ul>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var list_group = document.querySelector('.list-group');
+  document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('bell').addEventListener('click',(e)=>{
+      if(e){
+        e.preventDefault();
+      }
+
+      fetch('{% url "blog:notification" %}')
+      .then(response => response.json())
+      .then(data =>{
+        var j = JSON.parse(data);
+        for(let i of j){
+          if (i.fields.viewed_status == false){
+            const new_a_tag = document.createElement('a')
+            new_a_tag.setAttribute('class','list-group-item list-group-item-action');
+            new_a_tag.setAttribute('id',i.pk)
+            new_a_tag.setAttribute('href','/blog/'+i.fields.blog+'/')
+            new_a_tag.textContent = i.fields.fields;
+            new_a_tag.addEventListener("click",function(event){
+              event.preventDefault();
+
+              sendNotification(i.pk);
+              window.location.href='/blog/'+i.fields.blog+'/'
+            });
+            list_group.append(new_a_tag);
+          }
+        }
+      })
+      list_group.textContent = '';
+    })
+  })
+
+
+  function sendNotification(id){
+    fetch('{% url "blog:notification" %}',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body:JSON.stringify({'status':id})
+    })
+    .then(response => response.json)
+    .then(data => console.log(id))
+  }
+
+    // Function to get CSRF token from cookies
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+</script>

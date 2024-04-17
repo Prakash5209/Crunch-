@@ -9,16 +9,20 @@ from django.http import HttpResponse,JsonResponse
 from django.db.models import Q,Count,Avg,Exists,OuterRef,Max
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.core.serializers import serialize   
 from decouple import config
 from django.dispatch import Signal
 from django.http import Http404
 import random
 import re,json
+import time
 
-from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,LinkContainerModel,Notification
+from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,LinkContainerModel,NotificationModel
 from blog.forms import CreateBlogForm,CommentForm
 from account.views import userLogin
 from account.models import Profile,Follow
+
+
 
 class Home(ListView):
     template_name = 'home.html'
@@ -88,7 +92,6 @@ class CreateBlog(View):
                 result = re.sub(pattern,'',content)
                 title_check = set(title.split(' ')).intersection(set(profan_list))
                 if len(title_check) > 0 and len(result) > 0:
-                    print(title_check)
                     return HttpResponse('invalid content')
                 else:
                     obj = form.save(commit = False)
@@ -102,8 +105,7 @@ class CreateBlog(View):
                         messages.info(self.request,'blog created successfully')
                         users,blog = self.request.user,obj.title
                         lst = [i.youser for i in Follow.objects.filter(follow = self.request.user)]
-                        ope = list(map(lambda x:Notification(fields=f"{users} posted a blog on {blog}",blog=obj,users=self.request.user,me_user=x).save(),lst))
-                        print(ope)
+                        ope = list(map(lambda x:NotificationModel(fields=f"{users} posted a blog on {blog}",blog=obj,users=self.request.user,me_user=x).save(),lst))
                         return redirect(reverse('account:ProfileView',args=(self.request.user.id,)))
             return render(request,'create_blog.html')
 
@@ -116,8 +118,10 @@ class UpdateBlog(UpdateView):
     form_class = CreateBlogForm
 
     def form_valid(self, form):
-        print(self.object)
         self.object = form.save()
+        users,blog = self.request.user,self.object.title
+        lst = [i.youser for i in Follow.objects.filter(follow=self.request.user)]
+        list(map(lambda x:NotificationModel(fields=f"{users} updated a blog on {blog}",blog=self.object,users=self.request.user,me_user=x).save(),lst))
         return super().form_valid(form)
     
     def get_success_url(self):
@@ -135,46 +139,6 @@ class UpdateBlog(UpdateView):
         if blog.user != self.request.user:
             raise Http404("You do not have permission to access this page.")
         return super().dispatch(request, *args, **kwargs)
-
-
-
-#@method_decorator(login_required,name='dispatch')
-#class CreateBlog(FormView):
-#    template_name = 'create_blog.html'
-#    form_class = CreateBlogForm
-#    success_url = "/"
-#
-#    def form_valid(self,form):
-#        profan = config('profanity')
-#        profan_list = profan.split('-')
-#        title = form.cleaned_data['title']
-#        content = form.cleaned_data['content']
-#
-#        pattern = re.compile('<.*?>')
-#        result = re.sub(pattern,'',content)
-#
-#        title_check = set(title.split(' ')).intersection(set(profan_list))
-#        # content_check = set(content.split(' ').intersection(set(profan_list)))
-#        if len(title_check) > 0 and len(result) > 0:
-#            print(title_check)
-#            return HttpResponse('invalid content')
-#        else:
-#            user_name = User.objects.get(email = self.request.user)
-#            if user_name.first_name == '' and user_name.last_name == '':
-#                return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles.id,)))
-#            else:
-#                obj = form.save(commit = False)
-#                obj.user = self.request.user
-#                tags = self.request.POST.get('tags').split(',')
-#                obj.save()
-#                obj.tags.add(*tags)
-#                if obj.save():
-#                    print('saved')
-#                    messages.info(self.request,'blog created successfully')
-#                    return redirect(reverse('account:ProfileView',args=(self.request.user.profiles.id,)))
-#                print('valid content')
-#                return super().form_valid(form)
-#           return redirect('blog:home')
 
 def BlogDetail(request,pk):
     blog_model = get_object_or_404(CreateBlogModel,status = 'public',id = pk)
@@ -198,6 +162,7 @@ def BlogDetail(request,pk):
                     obj.user = request.user 
                     obj.blog_id = blog_model
                     obj.save()
+                    NotificationModel(fields=f"{obj.user} commented on your blog on {blog_model.title}",blog=blog_model,users=request.user,me_user=blog_model.user).save()
                     return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
                 else:
                     request.session['next'] = pk
@@ -215,7 +180,9 @@ def BlogDetail(request,pk):
         if len(title_check) > 0 and len(result) > 0:
             return HttpResponse('invalid content')
         else:
-            BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None        
+            BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None
+            NotificationModel(fields=f"{request.user} commented on your blog on {blog_model.title}",blog=blog_model,users=request.user,me_user=blog_model.user).save()
+
 
     try:
         total_rate=sum([i.rate for i in Rating.objects.filter(blog__id = pk)])
@@ -254,6 +221,8 @@ def BlogDetail(request,pk):
 def like_post(request,pk):
     blog = get_object_or_404(CreateBlogModel,id = pk)
     like,created = LikeModel.objects.get_or_create(blog = blog,user = request.user)
+    users,blog_title = request.user,blog.title
+    NotificationModel(fields = f"{users} liked on your blog on {blog_title}",blog=blog,users=users,me_user = blog.user).save()
     if not created:
         if like:
             like.delete()
@@ -284,6 +253,8 @@ def rateBlog(request,pk):
         var = Rating.objects.filter(Q(blog__id=pk) & Q(user=request.user)).exists()
         if not var:
             Rating(rate=rate_value,blog=CreateBlogModel.objects.get(id=pk),user=request.user).save()
+            blog,user = CreateBlogModel.objects.get(id = pk),request.user
+            NotificationModel(fields=f"{user} rated on your blog on {blog.title}",blog=blog,users=request.user,me_user=blog.user).save()
             print("new object saved")
         else:
             rate_instance = Rating.objects.get(blog=CreateBlogModel.objects.get(id = pk),user=request.user)
@@ -305,6 +276,24 @@ def LinkContainer(request,pk):
             return redirect('blog:home')
     return JsonResponse({'status':'okay'},safe=False)
     
+
+class NotificationView(View):
+    def get(self,request):
+        notification = NotificationModel.objects.filter(me_user = self.request.user) if self.request.user.is_authenticated else None
+        try:
+            serialize_notification = serialize('json',notification)
+        except:
+            serialize_notification = None
+        return JsonResponse(serialize_notification,safe=False)
+    
+    def post(self,request):
+        notification_id = json.loads(request.body)
+        noti = notification_id.get('status')
+        notification_model = get_object_or_404(NotificationModel,id = noti)
+        notification_model.viewed_status = True
+        notification_model.save()
+        return JsonResponse({'status':'done'})
+
 
 class Aboutpage(TemplateView):
     template_name = 'aboutus.html'
