@@ -14,7 +14,7 @@ from decouple import config
 from django.http import Http404
 import random
 import re,json
-import time
+
 
 from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,LinkContainerModel,NotificationModel
 from blog.forms import CreateBlogForm,CommentForm
@@ -174,14 +174,21 @@ def BlogDetail(request,pk):
         print(comment_id)
 
         pattern = re.compile('<.*?>')
-        result = re.sub(pattern,'',raw_reply)
-        title_check = set(raw_reply.split(' ')).intersection(set(profan_list))
+        try:
+            result = re.sub(pattern,'',raw_reply)
+            title_check = set(raw_reply.split(' ')).intersection(set(profan_list))
+        except:
+            result = None
+            title_check = None
 
-        if len(title_check) > 0 and len(result) > 0:
-            return HttpResponse('invalid content')
-        else:
-            BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=raw_reply).save() if request.user.is_authenticated else None
-            NotificationModel(fields=f"{request.user} replyed on your comment on {blog_model.title} title",blog=blog_model,users=request.user,me_user=BlogCommentModel.objects.get(id = int(comment_id)).user).save()
+        try:
+            if len(title_check) > 0 and len(result) > 0:
+                return HttpResponse('invalid content')
+            else:
+                BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=raw_reply).save() if request.user.is_authenticated else None
+                NotificationModel(fields=f"{request.user} replyed on your comment on {blog_model.title} title",blog=blog_model,users=request.user,me_user=BlogCommentModel.objects.get(id = int(comment_id)).user).save()
+        except:
+            pass
 
 
     try:
@@ -242,6 +249,7 @@ class DeleteBlog(DeleteView):
 
 @login_required
 def DeleteComment(request, pk):
+    print('deleted')
     comment_model = get_object_or_404(BlogCommentModel,id = pk,user = request.user)
     comment_model.delete()
     return redirect(reverse('blog:blog_detail', kwargs={'pk': comment_model.blog_id.id}))
