@@ -7,6 +7,8 @@ from django.utils import timezone
 
 from account.models import User
 
+
+
 class Status(models.TextChoices):
     DRAFT = 'draft','DRAFT',
     PUBLIC = 'public','PUBLIC',
