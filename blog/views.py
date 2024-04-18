@@ -181,7 +181,7 @@ def BlogDetail(request,pk):
             return HttpResponse('invalid content')
         else:
             BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None
-            NotificationModel(fields=f"{request.user} commented on your blog on {blog_model.title}",blog=blog_model,users=request.user,me_user=blog_model.user).save()
+            NotificationModel(fields=f"{request.user} replyed on your comment on {blog_model.title} title",blog=blog_model,users=request.user,me_user=BlogCommentModel.objects.get(id = int(comment_id)).user).save()
 
 
     try:

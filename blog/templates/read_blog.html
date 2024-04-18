@@ -312,6 +312,8 @@
       </form>
 
 
+
+      {% comment %} parent comment {% endcomment %}
       <div class="comment-section">
         <h3>Comment Section</h3><hr>
         <ol style="padding:0;list-style:none;">
@@ -330,6 +332,7 @@
                       </div>
                       <div class="align-self-center">
                         <a id="comment_user" href="{% url 'account:ProfileView' comment.user.id %}">{{comment.user.first_name}} {{comment.user.last_name}}</a><br>
+                        <small>{{comment.created_at}}</small>
                       </div>
                     </div>
                   </div>
@@ -369,6 +372,8 @@
                     </div>
                   </div>
 
+
+                  {% comment %} child comment {% endcomment %}
                 {% for j in blog_comments %}
                   {% if j.parent_comment == comment %}
                   <div data-child-id="{{j.id}}">
@@ -385,12 +390,18 @@
                             </div>
                             <div class="align-self-center">
                               <a id="comment_user" href="{% url 'account:ProfileView' j.user.id %}">{{j.user.first_name}} {{j.user.last_name}}<br></a>
+                              <small>{{j.created_at}}</small>
                             </div>
                           </div>
                           <div class="p-2">{{j.comment}}</div>
                           <input type="hidden" name="child_id" value="{{j.id}}">
-                          <span>{% if request.user.is_authenticated %}&nbsp;&nbsp;
-                            <a href="#" class="reply-field">reply</a>&nbsp;<a href="" id="delete_comment" data-toggle="modal" data-target="#deleteCommentModal" ><u>delete</u></a>{% endif %}
+                          <span>
+                            {% if request.user.is_authenticated %}&nbsp;&nbsp;
+                              <a href="#" class="reply-field">reply</a>&nbsp;
+                              {% if j.user == request.user %}
+                                <a href="" id="delete_comment" data-toggle="modal" data-target="#deleteCommentModal" ><u>delete</u></a>
+                              {% endif %}
+                            {% endif %}
                           </span>
                         </li>
                       </ol>
