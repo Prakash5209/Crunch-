@@ -31,6 +31,7 @@
   <div class="container">
     <!-- Brand/logo -->
     <a class="navbar-brand p-2 navbar_brand" href="{% url 'blog:home' %}">Crunch Blog</a>
+	{{notification}}
 
     <!-- Burger button for mobile devices -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,19 +80,16 @@
   </div>
 </nav>
 
-
 <script>
   document.addEventListener('DOMContentLoaded',function(){
-
       fetch('{% url "blog:notification" %}')
       .then(response => response.json())
       .then(data =>{
         var j = JSON.parse(data);
         for(let i of j){
-          if (i.fields.viewed_status == false){
+          if (i.fields.viewed_status === false){
             document.querySelector('#bell_ring').setAttribute('class','fa-regular fa-bell fa-lg fa-shake')
-          }else{
-            document.querySelector('#bell_ring').setAttribute('class','fa-regular fa-bell fa-lg')
+			  console.log('okay')
           }
         }
       })

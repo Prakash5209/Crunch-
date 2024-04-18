@@ -11,7 +11,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.serializers import serialize   
 from decouple import config
-from django.dispatch import Signal
 from django.http import Http404
 import random
 import re,json
@@ -21,7 +20,6 @@ from blog.models import CreateBlogModel,BlogCommentModel,LikeModel,Rating,User,L
 from blog.forms import CreateBlogForm,CommentForm
 from account.views import userLogin
 from account.models import Profile,Follow
-
 
 
 class Home(ListView):
@@ -170,9 +168,11 @@ def BlogDetail(request,pk):
 
     #child comment
     if request.method == 'POST':
-        comment_id = request.POST.get('parent_comment_id')
-        comment = request.POST.get('reply')
-        raw_reply = request.POST.get('reply')
+        comment_id = request.POST.get('comment_id')
+        raw_reply = request.POST.get('reply_form')
+        print(raw_reply)
+        print(comment_id)
+
         pattern = re.compile('<.*?>')
         result = re.sub(pattern,'',raw_reply)
         title_check = set(raw_reply.split(' ')).intersection(set(profan_list))
@@ -180,7 +180,7 @@ def BlogDetail(request,pk):
         if len(title_check) > 0 and len(result) > 0:
             return HttpResponse('invalid content')
         else:
-            BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=comment).save() if request.user.is_authenticated else None
+            BlogCommentModel(user=request.user,blog_id=blog_model,parent_comment=BlogCommentModel.objects.get(id = int(comment_id)),comment=raw_reply).save() if request.user.is_authenticated else None
             NotificationModel(fields=f"{request.user} replyed on your comment on {blog_model.title} title",blog=blog_model,users=request.user,me_user=BlogCommentModel.objects.get(id = int(comment_id)).user).save()
 
 
@@ -204,7 +204,7 @@ def BlogDetail(request,pk):
         'blog_model':blog_model,
         'blog_model_tags':blog_model_tags,
         'blog_comment_form':blog_comment_form,
-        'blog_comments':BlogCommentModel.objects.filter(blog_id = pk),
+        'blog_comments':BlogCommentModel.objects.filter(blog_id = pk).order_by("created_at"),
         'total_likes':len(LikeModel.objects.filter(blog = blog_model)),
         'total_rate':total_rate,
         'avg_rate':avg_rate,
@@ -222,12 +222,14 @@ def like_post(request,pk):
     blog = get_object_or_404(CreateBlogModel,id = pk)
     like,created = LikeModel.objects.get_or_create(blog = blog,user = request.user)
     users,blog_title = request.user,blog.title
-    NotificationModel(fields = f"{users} liked on your blog on {blog_title}",blog=blog,users=users,me_user = blog.user).save()
     if not created:
         if like:
             like.delete()
         else:
             return redirect(reverse('blog:blog_detail',args=(blog.id,)))
+    else:
+        NotificationModel(fields = f"{users} liked on your blog on {blog_title}",blog=blog,users=users,me_user = blog.user).save()
+
     return JsonResponse({'status':created,'total':len(LikeModel.objects.filter(blog = blog))},safe=False)
 
 
@@ -292,6 +294,7 @@ class NotificationView(View):
         notification_model = get_object_or_404(NotificationModel,id = noti)
         notification_model.viewed_status = True
         notification_model.save()
+        print('notification True')
         return JsonResponse({'status':'done'})
 
 
