@@ -410,22 +410,22 @@
           <div class="carousel-item active">
             <div class="carousel_div p-4">
               <h3 class="text-center">Most liked</h3><hr>
-              <ol>
+              <ul>
                 {% for i in most_likes %}
                 <li><a class="most_liked_links" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a></li>
                 {% endfor %}
-              </ol><br>
+              </ul><br>
             </div>
             {% comment %} <img src="" class="d-block w-100" alt="..."> {% endcomment %}
           </div>
           <div class="carousel-item">
             <div class="carousel_div p-4">
               <h3 class="text-center">Most rated</h3><hr>
-              <ol>
+              <ul>
                 {% for j in top_rated %}
                 <li><a class="most_liked_links" href="{% url 'blog:blog_detail' j.blog.id %}">{{j.blog.title}}</a></li>
                 {% endfor %}
-              </ol><br> 
+              </ul><br> 
             </div>
           </div>
         </div>

@@ -67,19 +67,19 @@
       <div class="p-4">
         <table>
           <tr>
-            <th class="stat-label"><i class="fa-brands fa-readme fa-beat fa-xl"></i> &nbsp; Content</th>
+            <th class="stat-label"><i class="fa-brands fa-readme  fa-xl"></i> &nbsp; Content</th>
             <td class="stat-value">: {{total_contents|length}}</td>
           </tr>
           <tr>
-            <th class="stat-label"><i class="fa-solid fa-heart fa-beat fa-xl"></i> &nbsp; Likes</th>
+            <th class="stat-label"><i class="fa-solid fa-heart  fa-xl"></i> &nbsp; Likes</th>
             <td class="stat-value">: {{total_likes}}</td>
           </tr>
           <tr>
-            <th class="stat-label"><i class="fa-solid fa-star fa-beat fa-xl"></i>&nbsp; Rating </th>
+            <th class="stat-label"><i class="fa-solid fa-star  fa-xl"></i>&nbsp; Rating </th>
             <td class="stat-value">: {{total_rating}}</td>
           </tr>
           <tr>
-            <th class="stat-label"><i class="fa-solid fa-comment fa-beat fa-xl"></i> &nbsp; Comments </th>
+            <th class="stat-label"><i class="fa-solid fa-comment  fa-xl"></i> &nbsp; Comments </th>
             <td class="stat-value">: {{total_likes}}</td>
           </tr>
         </table>
@@ -169,7 +169,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Followers</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -178,9 +178,12 @@
         <div class="list-group">
           {% if follower %}
             {% for i in follower %}
-            <div class="d-flex justify-content-between">
-              <a href="{% url 'account:ProfileView' i.id %}" class="list-group-item list-group-item-action" tabindex="-1" aria-disabled="true">{{i}}</a>
-            </div>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>{{i}}</div>
+              <div><a href="{% url 'account:ProfileView' i.id %}" class="btn btn-info btn-sm" tabindex="-1" aria-disabled="true">View Profile</a></div>
+              </li>
+            </ul>
             {% endfor %}
           {% else %}
           <p>0 follower</p>
@@ -199,7 +202,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Following</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -208,9 +211,13 @@
         <div class="list-group">
           {% if following %}
             {% for i in following %}
-            <div class="d-flex justify-content-between">
-              <a href="{% url 'account:ProfileView' i.id %}" class="list-group-item list-group-item-action" tabindex="-1" aria-disabled="true">{{i}}</a>
-            </div>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div><a style="color:black;" href="{% url 'account:ProfileView' i.id %}">{{i}}</a></div>
+              <div>
+                <a href="{% url 'account:followInProfile' i.id %}" class="btn btn-info btn-sm" tabindex="-1" aria-disabled="true">Unfollow</a>
+              </div>
+             </ul>
             {% endfor %}
           {% else %}
           <p>0 following</p>

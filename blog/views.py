@@ -9,7 +9,7 @@ from django.http import HttpResponse,JsonResponse
 from django.db.models import Q,Count,Avg,Exists,OuterRef,Max
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.core.serializers import serialize   
+from django.core.serializers import serialize
 from decouple import config
 from django.http import Http404
 import random
@@ -35,7 +35,7 @@ class Home(ListView):
         context = super().get_context_data(**kwargs)
         context['tags_list'] = random.sample(list(CreateBlogModel.tags.all()),k = len(CreateBlogModel.tags.all()) if len(CreateBlogModel.tags.all()) < 5 else len(CreateBlogModel.tags.all()[:9]))
 
-        blogs_with_likes = CreateBlogModel.objects.annotate(num_likes=Count('blog_like')).filter(num_likes__gt=0).order_by('-num_likes')[:5]
+        blogs_with_likes = CreateBlogModel.objects.annotate(num_likes=Count('blog_like')).filter(num_likes__gt=0).order_by('-num_likes')[:3]
         context['most_likes'] = blogs_with_likes
 
         top_rated = Rating.objects.annotate(avg=Max('rate')).order_by('-avg')
