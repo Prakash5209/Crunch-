@@ -60,7 +60,7 @@
           <a class="nav-link" href="{% url 'blog:create_blog' %}">write</a>
         </li>
         <li class="nav-item">
-		<a class="nav-link" id="bell" href="{% url 'blog:notification' %}"><i id="bell_ring" class="fa-regular fa-bell fa-lg" data-toggle="modal" data-target="#exampleModalScrollable"></i></a>
+	  <a class="nav-link" id="bell" href="{% url 'blog:notification' %}"><i id="bell_ring" class="fa-regular fa-bell fa-lg" data-toggle="modal" data-target="#exampleModalScrollable"></i><span class="badge badge-light"></span></a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle {% if request.path == '/account/profileview/2/' %}active{% endif %}" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{request.user.email}}</a>
@@ -89,7 +89,7 @@
         for(let i of j){
           if (i.fields.viewed_status === false){
             document.querySelector('#bell_ring').setAttribute('class','fa-regular fa-bell fa-lg fa-shake')
-			  console.log('okay')
+            document.querySelector('.badge').textContent = j.length
           }
         }
       })

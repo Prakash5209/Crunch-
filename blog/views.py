@@ -289,7 +289,7 @@ def LinkContainer(request,pk):
 
 class NotificationView(View):
     def get(self,request):
-        notification = NotificationModel.objects.filter(me_user = self.request.user) if self.request.user.is_authenticated else None
+        notification = NotificationModel.objects.filter(Q(me_user = self.request.user) & Q(viewed_status=False)) if self.request.user.is_authenticated else None
         try:
             serialize_notification = serialize('json',notification)
         except:
