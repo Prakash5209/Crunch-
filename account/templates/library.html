@@ -34,7 +34,7 @@
                     <h5 class="read_later pt-2">Read later</h5><hr>
                     <ol>
                       {% for i in saved_blog %}
-                      <li><a class="blog_title" href="{% url 'blog:blog_detail' i.id %}">{{i.title}}</a></li>
+                      <li><a class="blog_title" href="{% url 'blog:blog_detail' i.slug %}">{{i.title}}</a></li>
                       {% endfor %}
                     </ol>
                   </div>
@@ -58,14 +58,14 @@
                         <div id="content_{{ i.id }}" class="card mt-4">
                             <div class="card-header d-flex justify-content-between">
                               <div>
-                                <a class="blog_title" href="{% url 'blog:blog_detail' i.id %}">{{ i.title }}</a>
+                                <a class="blog_title" href="{% url 'blog:blog_detail' i.slug %}">{{ i.title }}</a>
                               </div>
                               <div class="dropdown">
                                 <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton_{{ i.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                   <i class="fas fa-ellipsis-v"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right bg-white" aria-labelledby="dropdownMenuButton_{{ i.id }}">
-                                  <a class="dropdown-item" href="{% url 'blog:update_blog' i.id %}">Edit</a>
+                                  <a class="dropdown-item" href="{% url 'blog:update_blog' i.slug %}">Edit</a>
                                   <a class="dropdown-item text-danger" data-toggle="modal" data-target="#exampleModal_delete" href="{% url 'blog:delete_blog' i.id %}">Delete</a>
                                 </div>
                               </div>
@@ -98,7 +98,7 @@
                             <div id="content_{{ b.id }}" class="card mt-4">
                                 <div class="card-header d-flex justify-content-between">
                                   <div>
-                                    <a class="blog_title" href="{% if b.status == 'public' %}{% url 'blog:blog_detail' b.id %} {% else %} {% url 'blog:update_blog' b.id %} {% endif %}">{{ b.title }}</a>&nbsp;&nbsp;&nbsp;
+                                    <a class="blog_title" href="{% if b.status == 'public' %}{% url 'blog:blog_detail' b.slug %} {% else %} {% url 'blog:update_blog' b.slug %} {% endif %}">{{ b.title }}</a>&nbsp;&nbsp;&nbsp;
                                     {% if b.status == 'draft' %}<span class="badge badge-warning">DRAFT</span>{% endif %}
                                   </div>
                                   <div class="dropdown">
@@ -106,7 +106,7 @@
                                       <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-right bg-white" aria-labelledby="dropdownMenuButton_{{ b.id }}">
-                                      <a class="dropdown-item" href="{% url 'blog:update_blog' b.id %}">Edit</a>
+                                      <a class="dropdown-item" href="{% url 'blog:update_blog' b.slug %}">Edit</a>
                                       <a id="blog" class="dropdown-item text-danger" data-toggle="modal" data-target="#exampleModal_delete" data-blog-id={{b.id}}>Delete</a>
                                     </div>
                                   </div>

@@ -253,7 +253,7 @@
           &nbsp;
           <div class="align-self-center">
             {% if request.user == blog_model.user %}
-              <a href="{% url 'blog:update_blog' blog_model.id %}" class="btn btn-secondary btn-sm">Edit</a>
+              <a href="{% url 'blog:update_blog' blog_model.slug %}" class="btn btn-secondary btn-sm">Edit</a>
               <a href="" data-toggle="modal" data-target="#exampleModal" class="btn btn-secondary btn-sm">Delete</a><br>
             {% endif %}
           </div>
@@ -299,7 +299,7 @@
       <div>
         <div class="d-flex flex-nowrap justify-content-around bd-highlight">
           <div>
-            <a id="dataContainer" href="{% url 'blog:like_post' blog_model.id %}"><i id="like_icon" class="{% if like %}fa fa-solid fa-heart fa-xl checked{% else %}fa fa-regular fa-heart fa-xl unchecked{% endif %}"></i></a>&nbsp;<span id="likes" style="font-size: 1.2rem;">{{total_likes}}</span>
+            <a id="dataContainer" href="{% url 'blog:like_post' blog_model.slug %}"><i id="like_icon" class="{% if like %}fa fa-solid fa-heart fa-xl checked{% else %}fa fa-regular fa-heart fa-xl unchecked{% endif %}"></i></a>&nbsp;<span id="likes" style="font-size: 1.2rem;">{{total_likes}}</span>
           </div>
           <form method="post" id="rating_form">
             {% csrf_token %}
@@ -347,7 +347,7 @@
                     {% if not comment.parent_comment %}
 
                       {% comment %} parent comments {% endcomment %}
-                      <div class="border rounded p-2" id="{{comment.id}}">
+                      <div class="border rounded p-2 mb-2" id="{{comment.id}}">
                         <div class="d-flex flex-wrap">
                           <div class="circle-image-comment mr-2">
                             {% if comment.user.profiles.avatar %}
@@ -402,7 +402,7 @@
                     {% else %}
 
                     {% comment %} child comments {% endcomment %}
-                    <div class="border rounded p-2 m-2" id="{{comment.id}}">
+                    <div class="border rounded p-2 mb-2" id="{{comment.id}}">
                       <div class="d-flex flex-wrap">
                         <div class="circle-image-comment mr-2">
                           {% if comment.user.profiles.avatar %}
@@ -555,10 +555,11 @@
     });
   });
 
-
+  
+  //like post
   document.getElementById('like_icon').addEventListener('click',(e)=>{
     e.preventDefault()
-    fetch('{% url 'blog:like_post' blog_model.id %}')
+    fetch('{% url 'blog:like_post' blog_model.slug %}')
     .then(response => response.json())
     .then(data => {
       if(data.status){
@@ -570,8 +571,6 @@
       }
     })
   })
-
-
   document.addEventListener("DOMContentLoaded",()=>{
     const star = document.querySelectorAll(".fa-star");
 
@@ -589,7 +588,7 @@
         const ratingValue = item.getAttribute('value')
         const form = document.getElementById('rating_form')
         const csrftoken = form.querySelector('[name=csrfmiddlewaretoken]').value
-        fetch('{% url "blog:rateBlog" blog_model.id %}',{
+        fetch('{% url "blog:rateBlog" blog_model.slug %}',{
           method:"POST",
           headers:{
             'Content-Type':'application/json',

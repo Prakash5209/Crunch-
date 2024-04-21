@@ -10,8 +10,9 @@ from django.db.models import Q,Count,Avg,Exists,OuterRef,Max
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.serializers import serialize
-from decouple import config
 from django.http import Http404
+from decouple import config
+from django.utils.text import slugify
 import random
 import re,json
 
@@ -96,8 +97,9 @@ class CreateBlog(View):
                     obj.user = self.request.user
                     tags = self.request.POST.get('tags').split(',')
                     obj.save()
-                    print(obj)
                     obj.tags.add(*tags)
+                    obj.slug += str(obj.id)
+                    obj.save()
                     if obj:
                         print('saved')
                         messages.info(self.request,'blog created successfully')
@@ -116,7 +118,14 @@ class UpdateBlog(UpdateView):
     form_class = CreateBlogForm
 
     def form_valid(self, form):
-        self.object = form.save()
+        self.object = form.save(commit = False)
+        self.object.slug = slugify(form.cleaned_data['title']) + slugify(self.object.id)
+        self.object.save()
+        #self.object = form.save()
+        #print(slugify(form.cleaned_data['title']))
+        #self.model.slug = slugify(form.cleaned_data)
+        #self.model.save()
+        print('updation saved')
         users,blog = self.request.user,self.object.title
         lst = [i.youser for i in Follow.objects.filter(follow=self.request.user)]
         list(map(lambda x:NotificationModel(fields=f"{users} updated a blog on {blog}",blog=self.object,users=self.request.user,me_user=x).save(),lst))
@@ -126,7 +135,7 @@ class UpdateBlog(UpdateView):
         var =  self.request.POST.get('status')
         if var == 'public':
             messages.success(self.request,"blog updated!")
-            return reverse_lazy('blog:blog_detail',kwargs={'pk':self.object.pk})
+            return reverse_lazy('blog:blog_detail',kwargs={'slug':self.object.slug})
         else:
             messages.success(self.request,"blog updated!")
             return reverse_lazy('blog:home')
@@ -138,8 +147,8 @@ class UpdateBlog(UpdateView):
             raise Http404("You do not have permission to access this page.")
         return super().dispatch(request, *args, **kwargs)
 
-def BlogDetail(request,pk):
-    blog_model = get_object_or_404(CreateBlogModel,status = 'public',id = pk)
+def BlogDetail(request,slug):
+    blog_model = get_object_or_404(CreateBlogModel,status = 'public',slug = slug)
     blog_model_tags = blog_model.tags.all()
     blog_comment_form = CommentForm(request.POST or None, request.FILES or None)
     profan = config('profanity')
@@ -155,13 +164,13 @@ def BlogDetail(request,pk):
             if len(title_check) > 0 and len(result) > 0:
                 return HttpResponse('invalid content')
             else:
-                obj = blog_comment_form.save(commit=False)
                 if request.user.is_authenticated:
-                    obj.user = request.user 
+                    obj = blog_comment_form.save(commit=False)
+                    obj.user = request.user
                     obj.blog_id = blog_model
                     obj.save()
                     NotificationModel(fields=f"{obj.user} commented on your blog on {blog_model.title}",blog=blog_model,users=request.user,me_user=blog_model.user).save()
-                    return redirect(reverse('blog:blog_detail', args=(blog_model.id,)))
+                    return redirect(reverse('blog:blog_detail', args=(blog_model.slug,)))
                 else:
                     request.session['next'] = pk
                     return redirect('account:userLogin')
@@ -193,16 +202,20 @@ def BlogDetail(request,pk):
 
     try:
         total_rate=sum([i.rate for i in Rating.objects.filter(blog__id = pk)])
-        avg_rate=round(sum([i.rate for i in Rating.objects.filter(blog__id = blog_model.id)])/len(Rating.objects.filter(blog__id=blog_model.id)))
+        #avg_rate=round(sum([i.rate for i in Rating.objects.filter(blog__id = blog_model.id)])/len(Rating.objects.filter(blog__id=blog_model.id)))
     except:
-        avg_rate=0
+        #avg_rate=0
         total_rate = 0
 
+    if len(Rating.objects.filter(blog__id = blog_model.id)) == 0:
+        avg_rate=round(sum([i.rate for i in Rating.objects.filter(blog__id = blog_model.id)]))
+    else:    
+        avg_rate=round(sum([i.rate for i in Rating.objects.filter(blog__id = blog_model.id)])/len(Rating.objects.filter(blog__id=blog_model.id)))
 
     saved_blog = None
     try:
         if request.user.is_authenticated:
-            saved_blog = LinkContainerModel.objects.get(blog = CreateBlogModel.objects.get(id = pk),user = request.user)
+            saved_blog = LinkContainerModel.objects.get(blog = CreateBlogModel.objects.get(slug = slug),user = request.user)
         else:
             saved_blog = None
     except LinkContainerModel.DoesNotExist:
@@ -211,7 +224,7 @@ def BlogDetail(request,pk):
         'blog_model':blog_model,
         'blog_model_tags':blog_model_tags,
         'blog_comment_form':blog_comment_form,
-        'blog_comments':BlogCommentModel.objects.filter(blog_id = pk).order_by("created_at"),
+        'blog_comments':BlogCommentModel.objects.filter(blog_id = CreateBlogModel.objects.get(slug = slug)).order_by("created_at"),
         'total_likes':len(LikeModel.objects.filter(blog = blog_model)),
         'total_rate':total_rate,
         'avg_rate':avg_rate,
@@ -223,20 +236,17 @@ def BlogDetail(request,pk):
     return render(request,'read_blog.html',context)
     
 
-# better_like 
+# _like 
 @login_required
-def like_post(request,pk):
-    blog = get_object_or_404(CreateBlogModel,id = pk)
+def like_post(request,slug):
+    blog = get_object_or_404(CreateBlogModel,slug = slug)
     like,created = LikeModel.objects.get_or_create(blog = blog,user = request.user)
-    users,blog_title = request.user,blog.title
     if not created:
         if like:
+            print('deleting like')
             like.delete()
-        else:
-            return redirect(reverse('blog:blog_detail',args=(blog.id,)))
     else:
-        NotificationModel(fields = f"{users} liked on your blog on {blog_title}",blog=blog,users=users,me_user = blog.user).save()
-
+        NotificationModel(fields=f"{request.user} like on your post {blog.title}",blog=blog,users=request.user,me_user=blog.user,slug=slug).save()
     return JsonResponse({'status':created,'total':len(LikeModel.objects.filter(blog = blog))},safe=False)
 
 
@@ -255,25 +265,29 @@ def DeleteComment(request, pk):
     return redirect(reverse('blog:blog_detail', kwargs={'pk': comment_model.blog_id.id}))
 
 
-def rateBlog(request,pk):
+def rateBlog(request,slug):
     if request.method == 'POST':
         data = json.loads(request.body)
         rate_value = data.get('rating_value')
         print(rate_value)
-        var = Rating.objects.filter(Q(blog__id=pk) & Q(user=request.user)).exists()
+        var = Rating.objects.filter(Q(blog__slug=slug) & Q(user=request.user)).exists()
         if not var:
-            Rating(rate=rate_value,blog=CreateBlogModel.objects.get(id=pk),user=request.user).save()
-            blog,user = CreateBlogModel.objects.get(id = pk),request.user
+            Rating(rate=rate_value,blog=CreateBlogModel.objects.get(slug=slug),user=request.user).save()
+            blog,user = CreateBlogModel.objects.get(slug = slug),request.user
             NotificationModel(fields=f"{user} rated on your blog on {blog.title}",blog=blog,users=request.user,me_user=blog.user).save()
             print("new object saved")
         else:
-            rate_instance = Rating.objects.get(blog=CreateBlogModel.objects.get(id = pk),user=request.user)
+            blog,user = CreateBlogModel.objects.get(slug = slug),request.user
+            rate_instance = Rating.objects.get(blog=CreateBlogModel.objects.get(slug = slug),user=request.user)
             rate_instance.rate = rate_value
             rate_instance.save()
+            NotificationModel(fields=f"{user} rated on your blog on {blog.title}",blog=blog,users=request.user,me_user=blog.user).save()
             print('updated')
     # return JsonResponse({'rate_instance':round(sum([i.rate for i in CreateBlogModel.objects.get(id = pk).blog_rate.all()])/len(CreateBlogModel.objects.get(id = pk).blog_rate.all()))},safe=False)
-    return JsonResponse({'rate_instance':round(sum([i.rate for i in Rating.objects.filter(blog__id = pk)])/len(Rating.objects.filter(blog__id = pk)))
-,'total_rate_fetch':sum([i.rate for i in Rating.objects.filter(blog__id = pk)]),'total_rate_user_fetch':len(Rating.objects.filter(blog=CreateBlogModel.objects.get(id = pk)))},safe=False)
+    print(round(sum([i.rate for i in Rating.objects.filter(blog__slug = slug)])/len(Rating.objects.filter(blog__slug = slug))))
+    print(sum([i.rate for i in Rating.objects.filter(blog__slug = slug)]),len(Rating.objects.filter(blog=CreateBlogModel.objects.get(slug = slug))))
+    return JsonResponse({'rate_instance':round(sum([i.rate for i in Rating.objects.filter(blog__slug = slug)])/len(Rating.objects.filter(blog__slug = slug)))
+,'total_rate_fetch':sum([i.rate for i in Rating.objects.filter(blog__slug = slug)]),'total_rate_user_fetch':len(Rating.objects.filter(blog=CreateBlogModel.objects.get(slug = slug)))},safe=False)
 
 def LinkContainer(request,pk):
     get,create = LinkContainerModel.objects.get_or_create(blog=CreateBlogModel.objects.get(id = pk),user = request.user)

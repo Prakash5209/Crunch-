@@ -6,7 +6,7 @@ from blog.models import CreateBlogModel,BlogCommentModel
 class CreateBlogForm(forms.ModelForm):
     class Meta:
         model = CreateBlogModel
-        exclude = ('user',)
+        exclude = ('user','slug')
         widgets = {
             # 'image':forms.ImageField(attrs={'class':'form-control'}),
             'content':TinyMCE(),

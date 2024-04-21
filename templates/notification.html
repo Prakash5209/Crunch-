@@ -40,13 +40,13 @@
             const new_a_tag = document.createElement('a')
             new_a_tag.setAttribute('class','list-group-item list-group-item-action');
             new_a_tag.setAttribute('id',i.pk)
-            new_a_tag.setAttribute('href','/blog/'+i.fields.blog+'/')
+            new_a_tag.setAttribute('href','/blog/'+i.fields.slug+'/')
             new_a_tag.textContent = i.fields.fields;
             new_a_tag.addEventListener("click",function(event){
-              event.preventDefault();
+              event.preventDefault()
 
               sendNotification(i.pk);
-              window.location.href='/blog/'+i.fields.blog+'/'
+              window.location.href='/blog/'+i.fields.slug+'/'
             });
             list_group.append(new_a_tag);
           }
