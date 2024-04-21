@@ -4,9 +4,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from taggit.managers import TaggableManager
 from django.utils import timezone
+from django.utils.text import slugify
 
 from account.models import User
-
 
 
 class Status(models.TextChoices):
@@ -33,12 +33,18 @@ class CreateBlogModel(TimeStampModel):
     content = tinymce_models.HTMLField()
     status = models.CharField(max_length=255,choices=Status.choices,default=Status.DRAFT)
     tags = TaggableManager()
-    
+    slug = models.SlugField(unique=True,max_length=255)
+
+    def save(self,*args,**kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args,**kwargs)
+
     def __str__(self):
         return f'title:{self.title}, by:{self.user}'
     
 class BlogCommentModel(TimeStampModel):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="user_blog_comment")
     blog_id = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE)
     parent_comment = models.ForeignKey('self',null = True,blank = True,on_delete=models.CASCADE,related_name = 'replies')
     comment = models.TextField()
@@ -78,7 +84,13 @@ class NotificationModel(TimeStampModel):
     blog = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE,null=True,blank=True)
     users = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True,related_name="other_user")
     me_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    slug = models.SlugField(unique=False,max_length=255,blank=True,null=True)
 
+    def save(self,*args,**kwargs):
+        self.slug = self.blog.slug
+        super().save(*args,**kwargs)
+
+        
     def __str__(self):
         return self.fields
 

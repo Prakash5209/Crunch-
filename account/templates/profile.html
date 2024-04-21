@@ -80,7 +80,7 @@
           </tr>
           <tr>
             <th class="stat-label"><i class="fa-solid fa-comment  fa-xl"></i> &nbsp; Comments </th>
-            <td class="stat-value">: {{total_likes}}</td>
+            <td class="stat-value">: {{total_comments}}</td>
           </tr>
         </table>
       </div>
@@ -118,7 +118,7 @@
                   <div id="content_{{object.id}}" class="card mt-4">
                     <div class="card-header">
                         <div>
-                            <a href="{% url 'blog:blog_detail' blog.id %}">{{blog.title}}</a>
+                            <a href="{% url 'blog:blog_detail' blog.slug %}">{{blog.title}}</a>
                         </div>
                     </div>
                     <div class="card-body py-0 px-2">

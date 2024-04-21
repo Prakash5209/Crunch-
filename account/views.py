@@ -69,9 +69,7 @@ class ViewProfile(View):
         for i in my_blog:
             total_rating = total_rating + sum([j.rate for j in Rating.objects.filter(blog = i)])
 
-        total_comments = 0
-        for i in my_blog:
-            total_comments = total_comments + len([j for j in BlogCommentModel.objects.filter(blog_id = i.id)])
+        total_comments = user.user_blog_comment.count()
 
         context = {
             'profile_model': profile_model,
