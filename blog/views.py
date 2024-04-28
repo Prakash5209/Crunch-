@@ -172,7 +172,7 @@ def BlogDetail(request,slug):
                     NotificationModel(fields=f"{obj.user} commented on your blog on {blog_model.title}",blog=blog_model,users=request.user,me_user=blog_model.user).save()
                     return redirect(reverse('blog:blog_detail', args=(blog_model.slug,)))
                 else:
-                    request.session['next'] = pk
+                    request.session['next'] = slug
                     return redirect('account:userLogin')
 
     #child comment
