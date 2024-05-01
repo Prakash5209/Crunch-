@@ -199,10 +199,11 @@ def BlogDetail(request,slug):
         except:
             pass
 
-
+    
     try:
-        total_rate=sum([i.rate for i in Rating.objects.filter(blog__id = pk)])
-        #avg_rate=round(sum([i.rate for i in Rating.objects.filter(blog__id = blog_model.id)])/len(Rating.objects.filter(blog__id=blog_model.id)))
+        total_rate=sum([i.rate for i in Rating.objects.filter(blog__slug = slug)])
+
+                #avg_rate=round(sum([i.rate for i in Rating.objects.filter(blog__id = blog_model.id)])/len(Rating.objects.filter(blog__id=blog_model.id)))
     except:
         #avg_rate=0
         total_rate = 0
