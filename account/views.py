@@ -58,10 +58,9 @@ class ViewProfile(View):
         }
         form = ProfileForm(instance=profile_model,initial = initial_data)
 
-
         following =[i.follow for i in Follow.objects.filter(youser = User.objects.get(id = pk))]
         follower =[i.youser for i in Follow.objects.all() if i.follow == User.objects.get(id = pk)]
-
+        following_bool = True if self.request.user in follower else False
         total_likes = sum([len(i.blog_like.all()) for i in CreateBlogModel.objects.filter(user__id = pk)])
         total_contents = CreateBlogModel.objects.filter(user__id = pk)
         my_blog = CreateBlogModel.objects.filter(user__id = pk,status = 'public')
@@ -69,7 +68,7 @@ class ViewProfile(View):
         for i in my_blog:
             total_rating = total_rating + sum([j.rate for j in Rating.objects.filter(blog = i)])
 
-        total_comments = user.user_blog_comment.count()
+        total_comments = BlogCommentModel.objects.filter(user = user).count()
 
         context = {
             'profile_model': profile_model,
@@ -81,6 +80,7 @@ class ViewProfile(View):
             'total_contents':total_contents,
             'total_rating':total_rating,
             'total_comments':total_comments,
+            'following_bool':following_bool,
             }
         return render(request, 'profile.html', context)
 

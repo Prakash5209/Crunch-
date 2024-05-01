@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('blog.urls',namespace='blog')),
     path('account/',include('account.urls',namespace="account")),
+    path('chat/',include('chat.urls',namespace="chat")),
     path('tinymce/',include('tinymce.urls')),
 ]+static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)

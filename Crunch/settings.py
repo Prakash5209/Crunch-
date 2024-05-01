@@ -34,6 +34,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'crispy_forms',
+    'crispy_bootstrap3',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +50,7 @@ INSTALLED_APPS = [
     'account',
     'blog',
     'chat',
+
 ]
 
 MIDDLEWARE = [
@@ -196,3 +200,6 @@ TAGGIT_CASE_INSENSITIVE = True
 TIME_ZONE = 'Asia/Kathmandu'
 
 USE_TZ = True
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+#CRISPY_ALLOWED_TEMPLATE_PACKS = "../lib/python3.10/site-packages/crispy_bootstrap3"

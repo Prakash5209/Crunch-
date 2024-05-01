@@ -103,7 +103,9 @@
         {% endif %}
 
         {% if not profile_model.user == request.user %}
-        <a href="{% if not request.user.is_authenticated %}{% url 'account:userLogin' %}{% else %}{% url 'account:followInProfile' profile_model.user.id %}{% endif %}" class="btn btn-sm btn-primary">{% if follower %}Unfollow{% else %}Follow{% endif %}</a>
+        <a href="{% if not request.user.is_authenticated %}{% url 'account:userLogin' %}{% else %}{% url 'account:followInProfile' profile_model.user.id %}{% endif %}" class="btn btn-sm btn-primary">
+          {% if following_bool %}Unfollow{% else %}Follow{% endif %}
+        </a>
         {% endif %}
 
 

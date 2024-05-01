@@ -82,7 +82,7 @@ class NotificationModel(TimeStampModel):
     fields = models.CharField(max_length=255,null=True,blank=True)
     viewed_status = models.BooleanField(default=False)
     blog = models.ForeignKey(CreateBlogModel,on_delete=models.CASCADE,null=True,blank=True)
-    users = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True,related_name="other_user")
+    users = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True,related_name="other_user_notification")
     me_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     slug = models.SlugField(unique=False,max_length=255,blank=True,null=True)
 
