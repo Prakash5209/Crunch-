@@ -1,5 +1,4 @@
-from django.shortcuts import get_object_or_404,render,redirect
-from django.urls import reverse_lazy,reverse
+from django.shortcuts import get_object_or_404,render,redirect,reverse
 from django.views.generic import FormView,TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView,DeleteView
@@ -11,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.serializers import serialize
 from django.http import Http404
+from django.urls import reverse_lazy
 from decouple import config
 from django.utils.text import slugify
 import random
@@ -22,8 +22,7 @@ from blog.forms import CreateBlogForm,CommentForm
 from account.views import userLogin
 from account.models import Profile,Follow
 
-
-class Home(ListView):
+class Home(ListView): 
     template_name = 'home.html'
     model = CreateBlogModel
 
@@ -38,7 +37,6 @@ class Home(ListView):
 
         blogs_with_likes = CreateBlogModel.objects.annotate(num_likes=Count('blog_like')).filter(num_likes__gt=0).order_by('-num_likes')[:3]
         context['most_likes'] = blogs_with_likes
-
         top_rated = Rating.objects.annotate(avg=Max('rate')).order_by('-avg')
         context['top_rated'] = top_rated
 
@@ -70,12 +68,12 @@ def search_feature(request):
 class CreateBlog(View):
 
     def get(self,request):
-        form = CreateBlogForm(request.POST or None)
+        form = CreateBlogForm(request.POST or None, request.FILES or None)
         context = {'form':form}
         return render(request,'create_blog.html',context)
 
     def post(self,request):
-        form = CreateBlogForm(request.POST or None)
+        form = CreateBlogForm(request.POST or None, request.FILES or None)
         user_name = User.objects.get(email = self.request.user)
         if user_name.first_name == '' and user_name.last_name == '':
             return redirect(reverse('account:UpdateProfile',args=(self.request.user.profiles.id,)))
@@ -148,6 +146,8 @@ class UpdateBlog(UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
 def BlogDetail(request,slug):
+    print(get_object_or_404(CreateBlogModel,slug = slug).user.last_name)
+    print('end')
     blog_model = get_object_or_404(CreateBlogModel,status = 'public',slug = slug)
     blog_model_tags = blog_model.tags.all()
     blog_comment_form = CommentForm(request.POST or None, request.FILES or None)
