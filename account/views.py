@@ -116,7 +116,7 @@ class FollowInProfile(View):
             if get:
                 get.delete()
             else:
-                return redirect(reverse('account:ProfileView',args=(pk,)))           
+                return redirect(reverse('account:ProfileView',args=(pk,)))
 
         return redirect(reverse('account:ProfileView',args=(pk,)))           
 
