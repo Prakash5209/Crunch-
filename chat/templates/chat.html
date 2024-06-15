@@ -1,4 +1,105 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
-<p>success</p>
+
+<style>
+.circle-image {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+  
+  .circle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image fills container */
+  }
+
+  .circle-image-comment {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+  
+  .circle-image-comment img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image fills container */
+  }
+
+</style>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="list-group">
+            {% if follow_list|length == 0 %}
+                <a href="#" class="list-group-item list-group-item-action">Follow to chat</a>
+            {% endif %}
+            {% for i in follow_list %}
+                 {% url 'chat:MessageView' i.id as chat_url %}
+
+                 <a href="/chat/{{i.id}}/" class="list-group-item list-group-item-action {% if request.path == chat_url %}bg-info text-dark{% endif %}">
+                    <div class="d-flex align-items-start">
+                        <div class="circle-image mr-3">
+                            {% if i.profiles.avatar %}
+                                <img src="{{i.profiles.avatar.url}}" alt="Image description">
+                            {% else %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg" alt="Image description">
+                            {% endif %}
+                        </div>
+                        <div class="align-self-center">
+                            <span>{{i.first_name}}&nbsp;{{i.last_name}}</span>
+                        </div>
+                    </div>
+
+                 </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="d-flex flex-column mb-3">
+            <div class="p-2 border rounded" id="chat-container" style="overflow-y: auto; max-height: 500px; min-height: 400px;">
+                {% for c in chat %}
+                <div class="d-flex flex-wrap mb-2 border rounded p-2 {% if c.user == request.user %}bg-info{% else %}bg-light{% endif %}">
+                    <div class="circle-image-comment mr-2">
+                        {% if c.user.profiles.avatar %}
+                            <img src="{{c.user.profiles.avatar.url}}" alt="image" width="50">
+                        {% else %}
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg" alt="Image description">
+                        {% endif %}
+                    </div>
+                    <div class="align-self-center">
+                        <span><a href="{% url 'account:ProfileView' c.user.id %}" class="text-dark">{{c.user.first_name}}&nbsp;{{c.user.last_name}}</a><span class="text-secondary" style="font-size:0.8rem;">&nbsp;<span class="{% if c.user == request.user %}text-dark{% else %}{% endif %}">{{c.created_at}}</span></span></span><br>
+                        <span>{{c.text}}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if request.path != '/chat/' %}
+            <div class="p-2">
+                <form method="post">{% csrf_token %}
+                    {% crispy form %}
+                </form>
+            </div>
+            {% else %}
+            <div class="p-2">
+                click user to chat with
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var chatContainer = document.getElementById("chat-container");
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+});
+</script>
 {% endblock %}
+
