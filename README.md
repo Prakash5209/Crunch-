@@ -19,7 +19,7 @@ Crunch- is a dynamic blog posting website designed to provide a seamless platfor
 ## Tech Stack
 
 - **Backend**: Django
-- **Frontend**: HTML, CSS, JavaScript, Semantic UI
+- **Frontend**: HTML, CSS, JavaScript, Bootstrap
 - **Database**: SQLite (development), PostgreSQL (production)
 
 ## Installation
