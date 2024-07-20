@@ -61,8 +61,4 @@ Crunch- is a dynamic blog posting website designed to provide a seamless platfor
 - Browse and read posts from other users.
 - Comment on and like posts to engage with the community.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
 Thank you for checking out Crunch-! Happy blogging!
